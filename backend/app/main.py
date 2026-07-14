@@ -1,6 +1,6 @@
 """FastAPI application entry point for the Fat Loss PK backend."""
 
-import contextlib
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,13 +13,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS configuration
+# CORS - restrict to your domain in production
+allowed_origins = os.environ.get("CORS_ORIGINS", "http://localhost:8080,http://yoyo678.cc.cd,https://yoyo678.cc.cd").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict to your frontend domain
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
