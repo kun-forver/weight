@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>饮食记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f7; --card: #fff; --primary: #007aff; --green: #34c759;
+  --orange: #ff9500; --red: #ff3b30; --text: #1d1d1f; --text-light: #86868b; --border: #f0f0f2;
+}
+body { font-family: -apple-system, "PingFang SC", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+.phone-frame { width: 375px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; }
+
+.header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.header .date { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+.header .date-nav { display: flex; align-items: center; gap: 12px; }
+.header .date-nav .arrow { font-size: 18px; color: var(--primary); cursor: pointer; }
+
+/* Calorie summary */
+.cal-summary { margin: 0 20px 16px; background: var(--card); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; }
+.cal-ring-mini { width: 70px; height: 70px; position: relative; flex-shrink: 0; }
+.cal-ring-mini svg { transform: rotate(-90deg); }
+.cal-ring-mini .rb { fill: none; stroke: var(--border); stroke-width: 7; }
+.cal-ring-mini .rf { fill: none; stroke: var(--primary); stroke-width: 7; stroke-linecap: round; }
+.cal-ring-mini .rc { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 14px; font-weight: 700; }
+.cal-info { flex: 1; }
+.cal-info .ci-row { display: flex; gap: 16px; }
+.cal-info .ci-item .val { font-size: 18px; font-weight: 700; }
+.cal-info .ci-item .val.green { color: var(--green); } .cal-info .ci-item .val.orange { color: var(--orange); }
+.cal-info .ci-item .lbl { font-size: 11px; color: var(--text-light); }
+
+/* Search */
+.search-bar { margin: 0 20px 16px; display: flex; gap: 8px; }
+.search-bar input { flex: 1; height: 40px; border: 1px solid var(--border); border-radius: 12px; padding: 0 16px; font-size: 14px; outline: none; background: var(--card); }
+.search-bar input::placeholder { color: var(--text-light); }
+.search-bar .scan-btn { width: 40px; height: 40px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-size: 18px; cursor: pointer; }
+
+/* Categories */
+.categories { display: flex; padding: 0 20px; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+.cat-pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer; background: var(--card); color: var(--text-light); border: 1px solid var(--border); }
+.cat-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Quick add */
+.section-title { padding: 0 20px 10px; font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.section-title .st-more { font-size: 13px; color: var(--primary); font-weight: 400; }
+
+.quick-foods { padding: 0 20px; margin-bottom: 20px; }
+.quick-item { background: var(--card); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; }
+.quick-item .qi-emoji { width: 36px; height: 36px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.quick-item .qi-info { flex: 1; margin-left: 10px; }
+.quick-item .qi-name { font-size: 14px; font-weight: 500; }
+.quick-item .qi-cal { font-size: 11px; color: var(--text-light); margin-top: 1px; }
+.quick-item .qi-add { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: #fff; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Meal groups */
+.meal-group { margin: 0 20px 12px; }
+.mg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mg-header .mg-label { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.mg-header .mg-cal { font-size: 12px; color: var(--orange); font-weight: 600; }
+.mg-header .mg-add { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--primary); color: var(--primary); background: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.meal-item { background: var(--card); border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: center; }
+.meal-item .mi-emoji { width: 34px; height: 34px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.meal-item .mi-info { flex: 1; margin-left: 10px; }
+.meal-item .mi-name { font-size: 14px; font-weight: 500; }
+.meal-item .mi-meta { font-size: 10px; color: var(--text-light); margin-top: 1px; }
+.meal-item .mi-cal { font-size: 14px; font-weight: 700; color: var(--orange); }
+.meal-item .mi-del { margin-left: 8px; color: var(--text-light); font-size: 16px; cursor: pointer; }
+
+/* FAB + Nav */
+.fab { position: fixed; bottom: 68px; left: 50%; transform: translateX(120px); width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 26px; box-shadow: 0 4px 16px rgba(0,122,255,0.35); z-index: 10; }
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 375px; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 10; }
+.nav-item { flex: 1; text-align: center; }
+.nav-item .ni-icon { font-size: 22px; } .nav-item .ni-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+.nav-item.active .ni-label { color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="header">
+    <div class="date-nav">
+      <span class="arrow">‹</span>
+      <div style="text-align:center">
+        <h1>饮食记录</h1>
+        <div class="date">7月14日 · 周二</div>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <!-- Calorie Summary -->
+  <div class="cal-summary">
+    <div class="cal-ring-mini">
+      <svg width="70" height="70" viewBox="0 0 70 70"><circle class="rb" cx="35" cy="35" r="28"/><circle class="rf" cx="35" cy="35" r="28" stroke-dasharray="176" stroke-dashoffset="55"/></svg>
+      <div class="rc">69%</div>
+    </div>
+    <div class="cal-info">
+      <div class="ci-row">
+        <div class="ci-item"><div class="val green">553</div><div class="lbl">剩余 kcal</div></div>
+        <div class="ci-item"><div class="val">1,247</div><div class="lbl">已摄入</div></div>
+        <div class="ci-item"><div class="val orange">320</div><div class="lbl">运动消耗</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input placeholder="搜索食物，如 鸡胸肉">
+    <button class="scan-btn">🔍</button>
+  </div>
+
+  <!-- Categories -->
+  <div class="categories">
+    <span class="cat-pill active">全部</span>
+    <span class="cat-pill">主食</span>
+    <span class="cat-pill">肉蛋</span>
+    <span class="cat-pill">蔬菜</span>
+    <span class="cat-pill">水果</span>
+    <span class="cat-pill">饮品</span>
+    <span class="cat-pill">零食</span>
+  </div>
+
+  <!-- Quick Add -->
+  <div class="section-title">⚡ 常吃食物 <span class="st-more">全部 ›</span></div>
+  <div class="quick-foods">
+    <div class="quick-item">
+      <div class="qi-emoji">🥚</div>
+      <div class="qi-info"><div class="qi-name">水煮蛋</div><div class="qi-cal">144 kcal / 100g</div></div>
+      <button class="qi-add">+</button>
+    </div>
+    <div class="quick-item">
+      <div class="qi-emoji">🐔</div>
+      <div class="qi-info"><div class="qi-name">鸡胸肉</div><div class="qi-cal">133 kcal / 100g</div></div>
+      <button class="qi-add">+</button>
+    </div>
+    <div class="quick-item">
+      <div class="qi-emoji">🍌</div>
+      <div class="qi-info"><div class="qi-name">香蕉</div><div class="qi-cal">89 kcal / 100g</div></div>
+      <button class="qi-add">+</button>
+    </div>
+    <div class="quick-item">
+      <div class="qi-emoji">🥛</div>
+      <div class="qi-info"><div class="qi-name">脱脂牛奶</div><div class="qi-cal">34 kcal / 100ml</div></div>
+      <button class="qi-add">+</button>
+    </div>
+  </div>
+
+  <!-- Meal Groups -->
+  <div class="section-title">📋 今日饮食</div>
+  <div class="meal-group">
+    <div class="mg-header">
+      <div class="mg-label">🍳 早餐 <span style="font-size:12px;color:var(--text-light);font-weight:400">320 kcal</span></div>
+      <button class="mg-add">+</button>
+    </div>
+    <div class="meal-item">
+      <div class="mi-emoji">🥚</div>
+      <div class="mi-info"><div class="mi-name">水煮蛋 + 全麦面包</div><div class="mi-meta">蛋白质 18g · 08:30 · 200g</div></div>
+      <div class="mi-cal">320</div>
+      <span class="mi-del">×</span>
+    </div>
+  </div>
+  <div class="meal-group">
+    <div class="mg-header">
+      <div class="mg-label">🥗 午餐 <span style="font-size:12px;color:var(--text-light);font-weight:400">427 kcal</span></div>
+      <button class="mg-add">+</button>
+    </div>
+    <div class="meal-item">
+      <div class="mi-emoji">🥗</div>
+      <div class="mi-info"><div class="mi-name">鸡胸肉蔬菜沙拉</div><div class="mi-meta">蛋白质 35g · 12:15 · 350g</div></div>
+      <div class="mi-cal">427</div>
+      <span class="mi-del">×</span>
+    </div>
+  </div>
+  <div class="meal-group">
+    <div class="mg-header">
+      <div class="mg-label">🥣 晚餐 <span style="font-size:12px;color:var(--text-light);font-weight:400">0 kcal</span></div>
+      <button class="mg-add">+</button>
+    </div>
+    <div style="text-align:center;padding:16px;color:var(--text-light);font-size:13px">还没有记录，点击 + 添加</div>
+  </div>
+  <div class="meal-group">
+    <div class="mg-header">
+      <div class="mg-label">🍎 加餐 <span style="font-size:12px;color:var(--text-light);font-weight:400">500 kcal</span></div>
+      <button class="mg-add">+</button>
+    </div>
+    <div class="meal-item">
+      <div class="mi-emoji">🍎</div>
+      <div class="mi-info"><div class="mi-name">苹果 + 希腊酸奶</div><div class="mi-meta">蛋白质 12g · 15:00 · 150g</div></div>
+      <div class="mi-cal">500</div>
+      <span class="mi-del">×</span>
+    </div>
+  </div>
+
+  <div style="height:100px"></div>
+  <div class="fab">+</div>
+  <div class="bottom-nav">
+    <div class="nav-item"><div class="ni-icon">🏠</div><div class="ni-label">首页</div></div>
+    <div class="nav-item active"><div class="ni-icon">🍽️</div><div class="ni-label">饮食</div></div>
+    <div class="nav-item"><div class="ni-icon">⚖️</div><div class="ni-label">体重</div></div>
+    <div class="nav-item"><div class="ni-icon">🆚</div><div class="ni-label">对战</div></div>
+    <div class="nav-item"><div class="ni-icon">👤</div><div class="ni-label">我的</div></div>
+  </div>
+</div>
+</body>
+</html>

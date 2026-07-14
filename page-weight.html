@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体重记录</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f5f5f7; --card: #fff; --primary: #007aff; --green: #34c759;
+  --orange: #ff9500; --red: #ff3b30; --text: #1d1d1f; --text-light: #86868b; --border: #f0f0f2;
+}
+body { font-family: -apple-system, "PingFang SC", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+.phone-frame { width: 375px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; }
+
+.header { padding: 16px 20px 8px; }
+.header h1 { font-size: 20px; font-weight: 700; }
+
+/* Big weight card */
+.weight-hero { margin: 8px 20px 16px; background: linear-gradient(135deg, var(--primary), #5ac8fa); border-radius: 18px; padding: 20px; color: #fff; box-shadow: 0 4px 16px rgba(0,122,255,0.2); }
+.weight-hero .wh-top { display: flex; justify-content: space-between; align-items: baseline; }
+.weight-hero .wh-label { font-size: 13px; opacity: 0.9; }
+.weight-hero .wh-change { font-size: 13px; opacity: 0.9; }
+.weight-hero .wh-current { font-size: 42px; font-weight: 700; margin-top: 8px; }
+.weight-hero .wh-current span { font-size: 18px; opacity: 0.8; }
+.weight-hero .wh-goal { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+.weight-hero .wh-record { margin-top: 14px; height: 38px; border-radius: 12px; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+.weight-hero .wh-record:active { background: rgba(255,255,255,0.35); }
+
+/* Range tabs */
+.range-tabs { display: flex; padding: 0 20px; gap: 8px; margin-bottom: 12px; }
+.range-tab { flex: 1; text-align: center; padding: 8px; border-radius: 10px; font-size: 13px; cursor: pointer; background: var(--card); color: var(--text-light); border: 1px solid var(--border); }
+.range-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Chart */
+.chart-card { margin: 0 20px 16px; background: var(--card); border-radius: 16px; padding: 16px; }
+.chart-card .cc-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+.chart { height: 140px; display: flex; align-items: end; gap: 4px; position: relative; }
+.chart-bar { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--primary), rgba(0,122,255,0.15)); min-height: 10px; position: relative; cursor: pointer; }
+.chart-bar.today { background: linear-gradient(180deg, var(--green), rgba(52,199,89,0.2)); }
+.chart-bar .tip { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; display: none; }
+.chart-bar:hover .tip { display: block; }
+.chart-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-light); }
+
+/* Stats grid */
+.stats-grid { display: flex; padding: 0 20px; gap: 10px; margin-bottom: 16px; }
+.stat-card { flex: 1; background: var(--card); border-radius: 14px; padding: 14px; text-align: center; }
+.stat-card .sc-val { font-size: 18px; font-weight: 700; }
+.stat-card .sc-val.green { color: var(--green); } .stat-card .sc-val.red { color: var(--red); }
+.stat-card .sc-lbl { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+
+/* Calendar */
+.section-title { padding: 0 20px 10px; font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.section-title .st-more { font-size: 13px; color: var(--primary); font-weight: 400; }
+
+.calendar-card { margin: 0 20px 16px; background: var(--card); border-radius: 16px; padding: 16px; }
+.cal-weekdays { display: flex; margin-bottom: 8px; }
+.cal-weekdays .wd { flex: 1; text-align: center; font-size: 11px; color: var(--text-light); }
+.cal-days { display: flex; flex-wrap: wrap; }
+.cal-day { width: calc(100% / 7); height: 36px; display: flex; align-items: center; justify-content: center; font-size: 13px; position: relative; }
+.cal-day.has-record::after { content: ''; position: absolute; bottom: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+.calday.today { font-weight: 700; color: var(--primary); }
+.cal-day.today.has-record::after { background: var(--primary); }
+.cal-day.other-month { color: #ccc; }
+
+/* Journal */
+.journal-list { margin: 0 20px; }
+.journal-item { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 8px; }
+.journal-item .ji-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.journal-item .ji-date { font-size: 13px; font-weight: 600; }
+.journal-item .ji-weight { font-size: 16px; font-weight: 700; color: var(--primary); }
+.journal-item .ji-note { font-size: 12px; color: var(--text-light); margin-top: 4px; line-height: 1.5; }
+.journal-item .ji-tags { display: flex; gap: 6px; margin-top: 6px; }
+.journal-item .ji-tag { font-size: 10px; padding: 2px 8px; border-radius: 8px; background: var(--bg); color: var(--text-light); }
+
+/* Nav */
+.fab { position: fixed; bottom: 68px; left: 50%; transform: translateX(120px); width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 26px; box-shadow: 0 4px 16px rgba(0,122,255,0.35); z-index: 10; }
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 375px; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 10; }
+.nav-item { flex: 1; text-align: center; }
+.nav-item .ni-icon { font-size: 22px; } .nav-item .ni-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+.nav-item.active .ni-label { color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="header"><h1>体重记录</h1></div>
+
+  <!-- Big Weight -->
+  <div class="weight-hero">
+    <div class="wh-top">
+      <div class="wh-label">今日体重</div>
+      <div class="wh-change">↓ 0.5kg 较昨日</div>
+    </div>
+    <div class="wh-current">72.3 <span>kg</span></div>
+    <div class="wh-goal">目标 68kg · 还差 4.3kg · 已完成 57%</div>
+    <div class="wh-record">+ 记录体重</div>
+  </div>
+
+  <!-- Range Tabs -->
+  <div class="range-tabs">
+    <div class="range-tab">7天</div>
+    <div class="range-tab active">30天</div>
+    <div class="range-tab">全部</div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-card">
+    <div class="cc-title">📈 体重趋势</div>
+    <div class="chart">
+      <div class="chart-bar" style="height:92%"><div class="tip">75.5kg</div></div>
+      <div class="chart-bar" style="height:88%"><div class="tip">75.2kg</div></div>
+      <div class="chart-bar" style="height:85%"><div class="tip">74.8kg</div></div>
+      <div class="chart-bar" style="height:80%"><div class="tip">74.5kg</div></div>
+      <div class="chart-bar" style="height:76%"><div class="tip">74.1kg</div></div>
+      <div class="chart-bar" style="height:72%"><div class="tip">73.8kg</div></div>
+      <div class="chart-bar" style="height:68%"><div class="tip">73.5kg</div></div>
+      <div class="chart-bar" style="height:65%"><div class="tip">73.2kg</div></div>
+      <div class="chart-bar" style="height:62%"><div class="tip">73.0kg</div></div>
+      <div class="chart-bar" style="height:58%"><div class="tip">72.8kg</div></div>
+      <div class="chart-bar" style="height:55%"><div class="tip">72.7kg</div></div>
+      <div class="chart-bar" style="height:52%"><div class="tip">72.6kg</div></div>
+      <div class="chart-bar" style="height:50%"><div class="tip">72.5kg</div></div>
+      <div class="chart-bar" style="height:48%"><div class="tip">72.4kg</div></div>
+      <div class="chart-bar today" style="height:45%"><div class="tip">72.3kg 今日</div></div>
+    </div>
+    <div class="chart-labels"><span>6月15日</span><span>7月14日</span></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="sc-val green">3.2</div><div class="sc-lbl">本月减重 kg</div></div>
+    <div class="stat-card"><div class="sc-val">72.3</div><div class="sc-lbl">当前体重 kg</div></div>
+    <div class="stat-card"><div class="sc-val">75.5</div><div class="sc-lbl">月初体重 kg</div></div>
+    <div class="stat-card"><div class="sc-val green">23.1</div><div class="sc-lbl">BMI</div></div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="section-title">📅 7月打卡日历</div>
+  <div class="calendar-card">
+    <div class="cal-weekdays">
+      <div class="wd">日</div><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div><div class="wd">四</div><div class="wd">五</div><div class="wd">六</div>
+    </div>
+    <div class="cal-days">
+      <div class="cal-day other-month">29</div><div class="cal-day other-month">30</div>
+      <div class="cal-day has-record">1</div><div class="cal-day has-record">2</div><div class="cal-day has-record">3</div><div class="cal-day has-record">4</div><div class="cal-day has-record">5</div>
+      <div class="cal-day has-record">6</div><div class="cal-day has-record">7</div><div class="cal-day has-record">8</div><div class="cal-day has-record">9</div><div class="cal-day has-record">10</div><div class="cal-day has-record">11</div><div class="cal-day has-record">12</div>
+      <div class="cal-day has-record">13</div><div class="cal-day today has-record">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div>
+      <div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div>
+      <div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+    </div>
+  </div>
+
+  <!-- Body Journal -->
+  <div class="section-title">📝 身体日志 <span class="st-more">全部 ›</span></div>
+  <div class="journal-list">
+    <div class="journal-item">
+      <div class="ji-header"><div class="ji-date">7月14日 · 今日</div><div class="ji-weight">72.3 kg</div></div>
+      <div class="ji-note">今天感觉状态不错，晨跑30分钟后精神很好。午餐控制了碳水，下午略饿但坚持住了。</div>
+      <div class="ji-tags"><span class="ji-tag">💪 运动日</span><span class="ji-tag">↓ 0.5kg</span></div>
+    </div>
+    <div class="journal-item">
+      <div class="ji-header"><div class="ji-date">7月13日</div><div class="ji-weight">72.8 kg</div></div>
+      <div class="ji-note">休息日，没有运动。饮食正常，晚上有点馋零食但忍住了。</div>
+      <div class="ji-tags"><span class="ji-tag">🛋️ 休息日</span></div>
+    </div>
+    <div class="journal-item">
+      <div class="ji-header"><div class="ji-date">7月12日</div><div class="ji-weight">73.0 kg</div></div>
+      <div class="ji-note">力量训练1小时，深蹲和硬拉。体感比上周轻松了一些，进步明显。</div>
+      <div class="ji-tags"><span class="ji-tag">💪 运动日</span><span class="ji-tag">体脂 22.5%</span></div>
+    </div>
+  </div>
+
+  <div style="height:100px"></div>
+  <div class="fab">+</div>
+  <div class="bottom-nav">
+    <div class="nav-item"><div class="ni-icon">🏠</div><div class="ni-label">首页</div></div>
+    <div class="nav-item"><div class="ni-icon">🍽️</div><div class="ni-label">饮食</div></div>
+    <div class="nav-item active"><div class="ni-icon">⚖️</div><div class="ni-label">体重</div></div>
+    <div class="nav-item"><div class="ni-icon">🆚</div><div class="ni-label">对战</div></div>
+    <div class="nav-item"><div class="ni-icon">👤</div><div class="ni-label">我的</div></div>
+  </div>
+</div>
+</body>
+</html>

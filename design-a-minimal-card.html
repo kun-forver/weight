@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案A · 极简白卡风</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "PingFang SC", "Segoe UI", sans-serif; background: #f5f5f7; color: #1d1d1f; }
+.phone-frame { width: 375px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; }
+.header { padding: 20px; text-align: center; background: #fff; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .date { font-size: 13px; color: #86868b; margin-top: 4px; }
+.ring-section { display: flex; justify-content: center; padding: 20px 0; }
+.calorie-ring { width: 200px; height: 200px; position: relative; }
+.ring-svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #f0f0f2; stroke-width: 12; }
+.ring-fill { fill: none; stroke: #34c759; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s; }
+.ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.ring-center .num { font-size: 32px; font-weight: 700; color: #1d1d1f; }
+.ring-center .unit { font-size: 12px; color: #86868b; }
+.ring-center .label { font-size: 13px; color: #86868b; margin-top: 2px; }
+.stats-row { display: flex; padding: 0 20px; gap: 12px; }
+.stat-card { flex: 1; background: #f5f5f7; border-radius: 16px; padding: 16px; text-align: center; }
+.stat-card .value { font-size: 22px; font-weight: 700; }
+.stat-card .value.green { color: #34c759; }
+.stat-card .value.blue { color: #007aff; }
+.stat-card .value.orange { color: #ff9500; }
+.stat-card .label { font-size: 12px; color: #86868b; margin-top: 4px; }
+.section-title { padding: 20px 20px 12px; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.section-title .more { font-size: 13px; color: #007aff; font-weight: 400; }
+.food-list { padding: 0 20px; }
+.food-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f2; }
+.food-icon { width: 40px; height: 40px; border-radius: 10px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.food-info { flex: 1; margin-left: 12px; }
+.food-info .name { font-size: 15px; font-weight: 500; }
+.food-info .detail { font-size: 12px; color: #86868b; margin-top: 2px; }
+.food-cal { font-size: 15px; font-weight: 600; color: #ff9500; }
+.weight-card { margin: 0 20px 16px; background: linear-gradient(135deg, #007aff, #5ac8fa); border-radius: 16px; padding: 20px; color: #fff; }
+.weight-card .title { font-size: 14px; opacity: 0.9; }
+.weight-card .current { font-size: 36px; font-weight: 700; margin-top: 8px; }
+.weight-card .change { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+.weight-card .trend { font-size: 12px; opacity: 0.8; margin-top: 8px; }
+.pk-card { margin: 0 20px 20px; background: #fff; border-radius: 20px; padding: 20px; border: 2px solid #f0f0f2; }
+.pk-header { display: flex; justify-content: space-between; align-items: center; }
+.pk-header .title { font-size: 16px; font-weight: 600; }
+.pk-header .status { font-size: 12px; color: #ff9500; background: #fff8e7; padding: 4px 10px; border-radius: 10px; }
+.pk-versus { display: flex; align-items: center; margin-top: 16px; }
+.pk-side { flex: 1; text-align: center; }
+.pk-side .avatar { width: 50px; height: 50px; border-radius: 50%; background: #f5f5f7; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.pk-side .name { font-size: 13px; font-weight: 500; }
+.pk-side .score { font-size: 11px; color: #86868b; margin-top: 2px; }
+.pk-side .score strong { color: #1d1d1f; font-size: 13px; }
+.pk-vs { font-size: 18px; font-weight: 800; color: #ff3b30; padding: 0 12px; }
+.pk-progress { margin-top: 16px; }
+.pk-bar { height: 8px; background: #f0f0f2; border-radius: 4px; overflow: hidden; display: flex; }
+.pk-bar .left { width: 58%; background: #34c759; }
+.pk-bar .right { width: 42%; background: #007aff; }
+.pk-days { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: #86868b; }
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 375px; background: #fff; border-top: 1px solid #f0f0f2; display: flex; padding: 8px 0 20px; }
+.nav-item { flex: 1; text-align: center; }
+.nav-item .icon { font-size: 22px; }
+.nav-item .label { font-size: 10px; color: #86868b; margin-top: 2px; }
+.nav-item.active .label { color: #007aff; }
+.fab { position: fixed; bottom: 60px; left: 50%; transform: translateX(120px); width: 56px; height: 56px; background: #007aff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 28px; box-shadow: 0 4px 15px rgba(0,122,255,0.4); cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="header">
+    <h1>减脂日记</h1>
+    <div class="date">2026年7月14日 · 周二</div>
+  </div>
+
+  <!-- 卡路里环 -->
+  <div class="ring-section">
+    <div class="calorie-ring">
+      <svg class="ring-svg" width="200" height="200" viewBox="0 0 200 200">
+        <circle class="ring-bg" cx="100" cy="100" r="85" />
+        <circle class="ring-fill" cx="100" cy="100" r="85" stroke-dasharray="534" stroke-dashoffset="187" />
+      </svg>
+      <div class="ring-center">
+        <div class="num">1,247</div>
+        <div class="unit">kcal 已摄入</div>
+        <div class="label">目标 1,800 kcal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="value green">553</div>
+      <div class="label">剩余可吃</div>
+    </div>
+    <div class="stat-card">
+      <div class="value orange">1,247</div>
+      <div class="label">已摄入</div>
+    </div>
+    <div class="stat-card">
+      <div class="value blue">320</div>
+      <div class="label">运动消耗</div>
+    </div>
+  </div>
+
+  <!-- 体重卡片 -->
+  <div class="section-title">体重追踪 <span class="more">查看趋势 ›</span></div>
+  <div class="weight-card">
+    <div class="title">今日体重</div>
+    <div class="current">72.3 <span style="font-size:16px">kg</span></div>
+    <div class="change">↓ 0.5kg 较昨日</div>
+    <div class="trend">7月累计减重 3.2kg · 目标 68kg</div>
+  </div>
+
+  <!-- 饮食记录 -->
+  <div class="section-title">今日饮食 <span class="more">+ 添加</span></div>
+  <div class="food-list">
+    <div class="food-item">
+      <div class="food-icon">🥚</div>
+      <div class="food-info">
+        <div class="name">水煮蛋 + 全麦面包</div>
+        <div class="detail">早餐 · 08:30</div>
+      </div>
+      <div class="food-cal">320 kcal</div>
+    </div>
+    <div class="food-item">
+      <div class="food-icon">🥗</div>
+      <div class="food-info">
+        <div class="name">鸡胸肉沙拉</div>
+        <div class="detail">午餐 · 12:15</div>
+      </div>
+      <div class="food-cal">427 kcal</div>
+    </div>
+    <div class="food-item">
+      <div class="food-icon">🍎</div>
+      <div class="food-info">
+        <div class="name">苹果 + 希腊酸奶</div>
+        <div class="detail">加餐 · 15:00</div>
+      </div>
+      <div class="food-cal">500 kcal</div>
+    </div>
+  </div>
+
+  <!-- PK对战 -->
+  <div class="section-title">PK 对战</div>
+  <div class="pk-card">
+    <div class="pk-header">
+      <div class="title">7月减脂挑战赛</div>
+      <div class="status">进行中 · 剩余17天</div>
+    </div>
+    <div class="pk-versus">
+      <div class="pk-side">
+        <div class="avatar">😎</div>
+        <div class="name">我</div>
+        <div class="score">已减 <strong>3.2</strong>kg</div>
+      </div>
+      <div class="pk-vs">VS</div>
+      <div class="pk-side">
+        <div class="avatar">💪</div>
+        <div class="name">好友A</div>
+        <div class="score">已减 <strong>2.8</strong>kg</div>
+      </div>
+    </div>
+    <div class="pk-progress">
+      <div class="pk-bar">
+        <div class="left"></div>
+        <div class="right"></div>
+      </div>
+      <div class="pk-days">
+        <span>目标各减 5kg</span>
+        <span>第14/30天</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:100px"></div>
+
+  <!-- 底部导航 -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <div class="icon">🏠</div>
+      <div class="label">首页</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon">🍽️</div>
+      <div class="label">饮食</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon">⚖️</div>
+      <div class="label">体重</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon">🆚</div>
+      <div class="label">PK</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon">👤</div>
+      <div class="label">我的</div>
+    </div>
+  </div>
+
+  <div class="fab">+</div>
+</div>
+</body>
+</html>
