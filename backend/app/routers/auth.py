@@ -148,10 +148,10 @@ async def upload_avatar(
         )
     # Validate file size (max 5MB)
     content = await file.read()
-    if len(content) > 5 * 1024 * 1024:
+    if len(content) > 10 * 1024 * 1024:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="图片大小不能超过 5MB",
+            detail="图片大小不能超过 10MB",
         )
     # Generate filename
     ext = file.filename.rsplit(".", 1)[-1] if "." in file.filename else "jpg"
