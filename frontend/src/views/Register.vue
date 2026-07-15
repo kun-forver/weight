@@ -57,6 +57,16 @@
             autocomplete="new-password"
           />
         </div>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input
+            v-model="form.confirm_password"
+            type="password"
+            placeholder="请确认密码"
+            class="auth-input"
+            autocomplete="new-password"
+          />
+        </div>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
         <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
@@ -87,6 +97,7 @@ const form = reactive({
   email: '',
   verification_code: '',
   password: '',
+  confirm_password: '',
 })
 const errorMsg = ref('')
 const successMsg = ref('')
@@ -128,6 +139,10 @@ async function handleSendCode() {
 async function handleRegister() {
   if (!form.username || !form.email || !form.verification_code || !form.password) {
     errorMsg.value = '请填写所有必填信息'
+    return
+  }
+  if (form.password !== form.confirm_password) {
+    errorMsg.value = '两次输入的密码不一致'
     return
   }
   loading.value = true
