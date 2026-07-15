@@ -1,7 +1,18 @@
 <template>
   <nav class="bottom-nav">
     <router-link
-      v-for="tab in tabs"
+      v-for="tab in leftTabs"
+      :key="tab.path"
+      :to="tab.path"
+      class="nav-item"
+      :class="{ active: isActive(tab.path) }"
+    >
+      <span class="nav-icon">{{ tab.icon }}</span>
+      <span class="nav-label">{{ tab.label }}</span>
+    </router-link>
+    <div class="nav-spacer"></div>
+    <router-link
+      v-for="tab in rightTabs"
       :key="tab.path"
       :to="tab.path"
       class="nav-item"
@@ -11,19 +22,21 @@
       <span class="nav-label">{{ tab.label }}</span>
     </router-link>
   </nav>
-  <button class="fab" @click="$emit('add')">
-    <span class="fab-icon">+</span>
-  </button>
+  <router-link to="/weight" class="fab" :class="{ active: isActive('/weight') }">
+    <span class="fab-icon">⚖️</span>
+    <span class="fab-label">体重</span>
+  </router-link>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
-const tabs = [
+const leftTabs = [
   { path: '/', label: '首页', icon: '🏠' },
   { path: '/food', label: '饮食', icon: '🍎' },
-  { path: '/weight', label: '体重', icon: '⚖️' },
+]
+const rightTabs = [
   { path: '/pk', label: '对战', icon: '⚔️' },
   { path: '/profile', label: '我的', icon: '👤' },
 ]
@@ -85,33 +98,48 @@ function isActive(path) {
   font-weight: 600;
 }
 
+.nav-spacer {
+  width: 64px;
+  flex-shrink: 0;
+}
+
 .fab {
   position: fixed;
-  bottom: 30px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   background: linear-gradient(135deg, #007aff, #5ac8fa);
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
   z-index: 101;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s;
   border: 3px solid #fff;
+  text-decoration: none;
 }
 
 .fab:active {
   transform: translateX(-50%) scale(0.92);
 }
 
+.fab.active {
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.6);
+}
+
 .fab-icon {
-  font-size: 28px;
-  color: #fff;
-  font-weight: 300;
+  font-size: 22px;
   line-height: 1;
-  margin-top: -2px;
+}
+
+.fab-label {
+  font-size: 8px;
+  color: #fff;
+  margin-top: 1px;
+  font-weight: 600;
 }
 </style>

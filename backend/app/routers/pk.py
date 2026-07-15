@@ -121,21 +121,6 @@ def accept_pk(
     return _enrich_battle(battle, db)
 
 
-@router.get("/{battle_id}", response_model=PKResponse)
-def get_pk(
-    battle_id: int,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get details of a specific PK battle."""
-    battle = db.query(PKBattle).filter(PKBattle.id == battle_id).first()
-    if not battle:
-        raise HTTPException(status_code=404, detail="PK battle not found")
-    if battle.user_a != current_user.id and battle.user_b != current_user.id:
-        raise HTTPException(status_code=403, detail="You are not part of this PK battle")
-    return _enrich_battle(battle, db)
-
-
 @router.get("/history", response_model=list[PKHistoryItem])
 def get_pk_history(
     current_user: User = Depends(get_current_user),
@@ -160,6 +145,21 @@ def get_pk_history(
         item.user_b_nickname = user_b.nickname if user_b else None
         result.append(item)
     return result
+
+
+@router.get("/{battle_id}", response_model=PKResponse)
+def get_pk(
+    battle_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get details of a specific PK battle."""
+    battle = db.query(PKBattle).filter(PKBattle.id == battle_id).first()
+    if not battle:
+        raise HTTPException(status_code=404, detail="PK battle not found")
+    if battle.user_a != current_user.id and battle.user_b != current_user.id:
+        raise HTTPException(status_code=403, detail="You are not part of this PK battle")
+    return _enrich_battle(battle, db)
 
 
 @router.post("/{battle_id}/end", response_model=PKResponse)
