@@ -173,21 +173,33 @@ def create_food_log(
     if food_id is None:
         raise HTTPException(status_code=400, detail="Either food_id or food_name is required")
 
+    # Auto-calculate calories and macros from food record if not provided
+    food = db.query(Food).filter(Food.id == food_id).first()
+    calories = payload.calories
+    protein = payload.protein
+    carbs = payload.carbs
+    fat = payload.fat
+    if food and calories == 0:
+        ratio = payload.amount / 100
+        calories = food.calories * ratio
+        protein = food.protein * ratio if food.protein else None
+        carbs = food.carbs * ratio if food.carbs else None
+        fat = food.fat * ratio if food.fat else None
+
     log = FoodLog(
         user_id=current_user.id,
         food_id=food_id,
         meal_type=payload.meal_type,
         amount=payload.amount,
-        calories=payload.calories,
-        protein=payload.protein,
-        carbs=payload.carbs,
-        fat=payload.fat,
+        calories=calories,
+        protein=protein,
+        carbs=carbs,
+        fat=fat,
     )
     db.add(log)
     db.commit()
     db.refresh(log)
 
-    food = db.query(Food).filter(Food.id == food_id).first()
     resp = FoodLogResponse.model_validate(log)
     resp.food_name = food.name if food else food_name
     return resp

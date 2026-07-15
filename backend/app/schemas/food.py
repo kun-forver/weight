@@ -36,7 +36,7 @@ class FoodLogCreate(BaseModel):
     food_name: str | None = None  # For custom food not in DB
     meal_type: int = Field(..., ge=0, le=3, description="0=breakfast, 1=lunch, 2=dinner, 3=snack")
     amount: float = Field(..., gt=0, description="amount in grams")
-    calories: float = Field(..., ge=0)
+    calories: float = Field(default=0, ge=0)
     protein: float | None = None
     carbs: float | None = None
     fat: float | None = None
