@@ -105,21 +105,21 @@ function isActive(path) {
 
 .fab {
   position: fixed;
-  bottom: 20px;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   background: linear-gradient(135deg, #007aff, #5ac8fa);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 122, 255, 0.35);
   z-index: 101;
   transition: transform 0.2s;
-  border: 3px solid #fff;
+  border: 2px solid #fff;
   text-decoration: none;
 }
 
