@@ -44,7 +44,7 @@
             :disabled="codeCooldown > 0 || sendingCode"
             @click="handleSendCode"
           >
-            {{ codeCooldown > 0 ? `${codeCooldown}s` : (sendingCode ? '发送中...' : '获取验证码') }}
+            {{ codeCooldown > 0 ? `${codeCooldown}s` : (sendingCode ? '...' : '获取') }}
           </button>
         </div>
         <div class="input-group">
@@ -261,12 +261,13 @@ async function handleRegister() {
 .btn-send-code {
   flex-shrink: 0;
   height: 36px;
-  padding: 0 14px;
+  width: 56px;
+  padding: 0;
   background: #007aff;
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
