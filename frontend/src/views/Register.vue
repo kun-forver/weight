@@ -14,17 +14,45 @@
           <input
             v-model="form.username"
             type="text"
-            placeholder="请输入用户名"
+            placeholder="用户名(6-8位,小写字母开头)"
             class="auth-input"
             autocomplete="username"
           />
+        </div>
+        <div class="input-group">
+          <span class="input-icon">📧</span>
+          <input
+            v-model="form.email"
+            type="email"
+            placeholder="请输入邮箱"
+            class="auth-input"
+            autocomplete="email"
+          />
+        </div>
+        <div class="input-group code-group">
+          <span class="input-icon">🔐</span>
+          <input
+            v-model="form.verification_code"
+            type="text"
+            placeholder="验证码"
+            class="auth-input"
+            maxlength="6"
+          />
+          <button
+            type="button"
+            class="btn-send-code"
+            :disabled="codeCooldown > 0 || sendingCode"
+            @click="handleSendCode"
+          >
+            {{ codeCooldown > 0 ? `${codeCooldown}s` : (sendingCode ? '发送中...' : '获取验证码') }}
+          </button>
         </div>
         <div class="input-group">
           <span class="input-icon">🔒</span>
           <input
             v-model="form.password"
             type="password"
-            placeholder="请输入密码"
+            placeholder="密码(至少8位,含两种字符类型)"
             class="auth-input"
             autocomplete="new-password"
           />
@@ -34,12 +62,13 @@
           <input
             v-model="form.nickname"
             type="text"
-            placeholder="请输入昵称"
+            placeholder="昵称(选填)"
             class="auth-input"
           />
         </div>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+        <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
 
         <button type="submit" class="btn-primary" :disabled="loading">
           {{ loading ? '注册中...' : '注 册' }}
@@ -54,30 +83,68 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import api from '../api'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const form = reactive({
   username: '',
+  email: '',
+  verification_code: '',
   password: '',
   nickname: '',
 })
 const errorMsg = ref('')
+const successMsg = ref('')
 const loading = ref(false)
+const sendingCode = ref(false)
+const codeCooldown = ref(0)
+let cooldownTimer = null
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
+async function handleSendCode() {
+  if (!form.email) {
+    errorMsg.value = '请先输入邮箱'
+    return
+  }
+  errorMsg.value = ''
+  successMsg.value = ''
+  sendingCode.value = true
+  try {
+    const res = await api.post('/auth/send-code', { email: form.email })
+    successMsg.value = res.data.message || '验证码已发送，请查收邮箱'
+    codeCooldown.value = 60
+    cooldownTimer = setInterval(() => {
+      codeCooldown.value--
+      if (codeCooldown.value <= 0) {
+        clearInterval(cooldownTimer)
+      }
+    }, 1000)
+  } catch (e) {
+    const detail = e.response?.data?.detail
+    errorMsg.value = typeof detail === 'string' ? detail : '验证码发送失败，请稍后重试'
+  } finally {
+    sendingCode.value = false
+  }
+}
 
 async function handleRegister() {
-  if (!form.username || !form.password || !form.nickname) {
-    errorMsg.value = '请填写所有信息'
+  if (!form.username || !form.email || !form.verification_code || !form.password) {
+    errorMsg.value = '请填写所有必填信息'
     return
   }
   loading.value = true
   errorMsg.value = ''
+  successMsg.value = ''
   try {
-    await authStore.register(form.username, form.password, form.nickname)
+    await authStore.register(form)
     router.push('/')
   } catch (e) {
     const detail = e.response?.data?.detail
@@ -167,6 +234,10 @@ async function handleRegister() {
   box-shadow: 0 0 0 2px #007aff;
 }
 
+.code-group {
+  gap: 8px;
+}
+
 .input-icon {
   font-size: 18px;
   margin-right: 10px;
@@ -187,8 +258,35 @@ async function handleRegister() {
   color: #aeaeb2;
 }
 
+.btn-send-code {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  background: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-send-code:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .error-msg {
   color: #ff3b30;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.success-msg {
+  color: #34c759;
   font-size: 13px;
   margin-bottom: 12px;
   text-align: center;

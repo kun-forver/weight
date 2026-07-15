@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     # Open Food Facts API
     OFF_API_URL: str = "https://world.openfoodfacts.org"
 
+    # Email SMTP settings (QQ Mail)
+    SMTP_HOST: str = "smtp.qq.com"
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM_NAME: str = "减脂PK"
+    VERIFICATION_CODE_EXPIRE_MINUTES: int = 5
+
     @property
     def DATABASE_URL(self) -> str:
         """Build the SQLAlchemy database URL for MySQL."""

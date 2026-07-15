@@ -1,4 +1,4 @@
-"""Authentication router: register, login, me, profile."""
+"""Authentication router: register, login, me, profile, email verification."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import (
+    SendCodeRequest,
     TokenResponse,
     UserCreate,
     UserLogin,
@@ -18,21 +19,57 @@ from app.services.auth import (
     hash_password,
     verify_password,
 )
+from app.services.email_service import send_code, verify_code
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/send-code", status_code=status.HTTP_200_OK)
+def send_verification_code(payload: SendCodeRequest, db: Session = Depends(get_db)):
+    """Send a verification code to the given email address."""
+    # Check if email is already registered
+    existing = db.query(User).filter(User.email == payload.email).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该邮箱已注册",
+        )
+    try:
+        send_code(payload.email)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="验证码发送失败，请稍后重试",
+        )
+    return {"message": "验证码已发送，请查收邮箱"}
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
     """Register a new user account."""
+    # Verify the email verification code
+    if not verify_code(payload.email, payload.verification_code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="验证码错误或已过期",
+        )
+    # Check username uniqueness
     existing = db.query(User).filter(User.username == payload.username).first()
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already exists",
+            detail="用户名已存在",
+        )
+    # Check email uniqueness
+    existing_email = db.query(User).filter(User.email == payload.email).first()
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该邮箱已注册",
         )
     user = User(
         username=payload.username,
+        email=payload.email,
         password_hash=hash_password(payload.password),
         nickname=payload.nickname,
         avatar=payload.avatar,
@@ -61,7 +98,7 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password",
+            detail="用户名或密码错误",
         )
     token = create_access_token(user.id, user.username)
     return TokenResponse(
