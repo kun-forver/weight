@@ -27,8 +27,9 @@ FOODS_DATA = [
     ("燕麦片", "主食", 377, 15.0, 61.0, 7.0),
     ("面条(煮)", "主食", 110, 3.5, 22.0, 0.6),
 
-    # 肉蛋 (Meat & Eggs) - 16 items
-    ("鸡胸肉", "肉蛋", 133, 30.0, 0.0, 1.2),
+    # 肉蛋 (Meat & Eggs) - 17 items
+    ("生鸡胸肉", "肉蛋", 120, 23.0, 0.0, 2.6),
+    ("熟鸡胸肉（无油煎/烤/煮）", "肉蛋", 165, 31.0, 0.0, 3.6),
     ("鸡腿(去皮)", "肉蛋", 181, 24.0, 0.0, 9.0),
     ("鸡蛋白", "肉蛋", 60, 11.0, 1.1, 0.2),
     ("鸡蛋(全)", "肉蛋", 144, 13.3, 2.8, 8.8),
@@ -108,12 +109,24 @@ FOODS_DATA = [
 
 
 def main() -> None:
-    """Seed the foods table if it is empty."""
+    """Seed the foods table if it is empty, or incrementally add raw/cooked chicken breasts."""
     db = SessionLocal()
     try:
         existing_count = db.query(Food).filter(Food.is_custom == False).count()
         if existing_count > 0:
-            print(f"Foods table already has {existing_count} non-custom foods. Skipping seed.")
+            # Check and incrementally add new chicken breast options if missing
+            raw_chicken = db.query(Food).filter(Food.name == "生鸡胸肉", Food.is_custom == False).first()
+            if not raw_chicken:
+                print("Adding '生鸡胸肉' to existing database...")
+                db.add(Food(name="生鸡胸肉", category="肉蛋", calories=120, protein=23.0, carbs=0.0, fat=2.6, is_custom=False))
+            
+            cooked_chicken = db.query(Food).filter(Food.name == "熟鸡胸肉（无油煎/烤/煮）", Food.is_custom == False).first()
+            if not cooked_chicken:
+                print("Adding '熟鸡胸肉（无油煎/烤/煮）' to existing database...")
+                db.add(Food(name="熟鸡胸肉（无油煎/烤/煮）", category="肉蛋", calories=165, protein=31.0, carbs=0.0, fat=3.6, is_custom=False))
+            
+            db.commit()
+            print(f"Foods table already has {existing_count} non-custom foods. Incremental checks complete.")
             return
 
         foods_to_insert = []

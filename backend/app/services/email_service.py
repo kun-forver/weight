@@ -60,7 +60,17 @@ def send_code(to_email: str) -> str:
     code = generate_code()
     expire_ts = time.time() + settings.VERIFICATION_CODE_EXPIRE_MINUTES * 60
     _code_store[to_email] = (code, expire_ts)
-    send_verification_email(to_email, code)
+    
+    # If SMTP settings are missing, log code to console and succeed (dev mode helper)
+    if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+        print(f"\n[DEVELOPMENT VERIFICATION CODE] Email: {to_email} | Code: {code}\n")
+        return code
+
+    try:
+        send_verification_email(to_email, code)
+    except Exception as e:
+        print(f"[Email Warning] Could not send email via SMTP, printing to console: {e}")
+        print(f"\n[DEVELOPMENT VERIFICATION CODE] Email: {to_email} | Code: {code}\n")
     return code
 
 

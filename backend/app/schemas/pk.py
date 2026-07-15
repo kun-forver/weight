@@ -65,3 +65,37 @@ class PKHistoryItem(BaseModel):
 
     user_a_nickname: str | None = None
     user_b_nickname: str | None = None
+
+
+class PKPlayerDetails(BaseModel):
+    """Schema for user details inside an active PK battle."""
+    id: int
+    name: str
+    avatar: str | None = None
+    score: float
+    pct: float
+
+
+class PKDetailsResponse(BaseModel):
+    """Schema for detailed active PK battle returned to the client."""
+    id: int
+    name: str
+    status: str
+    reward: str | None = None
+    days_total: int
+    days_elapsed: int
+    leader: int | None = None
+    user_a: PKPlayerDetails
+    user_b: PKPlayerDetails
+
+
+class PKHistoryResponse(BaseModel):
+    """Schema for a PK battle history item returned to the client."""
+    id: int
+    name: str
+    start_date: date
+    end_date: date
+    result: str  # "win", "lose", "draw"
+    rival_name: str
+    my_score: float
+    rival_score: float

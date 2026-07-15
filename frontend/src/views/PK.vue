@@ -385,7 +385,7 @@ async function checkIn() {
 async function fetchActiveBattle() {
   try {
     const res = await api.get('/pk/active')
-    activeBattle.value = res.data
+    activeBattle.value = res.data[0] || null
   } catch (e) {
     activeBattle.value = null
   }

@@ -251,7 +251,7 @@ const formattedDate = computed(() => {
 })
 
 const nutrition = computed(() => {
-  const n = data.value?.nutrition || {}
+  const n = data.value?.nutrition_breakdown || {}
   return {
     protein: { current: n.protein?.current || 0, target: n.protein?.target || 60 },
     carbs: { current: n.carbs?.current || 0, target: n.carbs?.target || 250 },
@@ -259,7 +259,29 @@ const nutrition = computed(() => {
   }
 })
 
-const weightData = computed(() => data.value?.weight || {})
+const weightData = computed(() => {
+  const w = data.value?.weight || {}
+  const current = w.latest || 0
+  const target = w.target_weight || 0
+  let target_progress = 0
+  if (current > 0 && target > 0) {
+    if (current <= target) {
+      target_progress = 100
+    } else {
+      const start = target + 5
+      const total = start - target
+      const done = start - current
+      target_progress = Math.max(0, Math.min(100, (done / total) * 100))
+    }
+  }
+  return {
+    current: current || '-',
+    change: w.change || 0,
+    target: target || '-',
+    monthly_loss: Math.abs(w.change || 0).toFixed(1),
+    target_progress: target_progress,
+  }
+})
 const weightTrend = computed(() => {
   const trend = weightData.value.trend || []
   if (trend.length === 0) return []
@@ -288,8 +310,10 @@ const meals = [
 ]
 
 function getMealFoods(mealType) {
-  const logs = data.value?.food_logs || []
-  return logs.filter(f => f.meal_type === mealType)
+  if (!data.value?.meals) return []
+  const map = { 0: 'breakfast', 1: 'lunch', 2: 'dinner', 3: 'snack' }
+  const key = map[mealType]
+  return data.value.meals[key] || []
 }
 
 function mealTotalCalories(mealType) {
@@ -344,13 +368,13 @@ async function fetchDashboard() {
     error.value = e
     data.value = {
       calorie_summary: { consumed: 0, remaining: 2000, exercise: 0, goal: 2000 },
-      nutrition: {
+      nutrition_breakdown: {
         protein: { current: 0, target: 60 },
         carbs: { current: 0, target: 250 },
         fat: { current: 0, target: 65 },
       },
-      weight: { current: 0, change: 0, trend: [], monthly_loss: 0, target: 0, target_progress: 0 },
-      food_logs: [],
+      weight: { latest: 0, previous: 0, change: 0, target_weight: 0 },
+      meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
       pk: null,
     }
   } finally {

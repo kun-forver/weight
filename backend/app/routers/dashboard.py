@@ -104,7 +104,7 @@ def get_dashboard(
     active_battle = (
         db.query(PKBattle)
         .filter(
-            PKBattle.status == 1,
+            PKBattle.status.in_([0, 1]),
             (PKBattle.user_a == current_user.id) | (PKBattle.user_b == current_user.id),
         )
         .order_by(PKBattle.created_at.desc())
@@ -113,53 +113,8 @@ def get_dashboard(
 
     pk_data = None
     if active_battle:
-        opponent_id = active_battle.user_b if active_battle.user_a == current_user.id else active_battle.user_a
-        opponent = db.query(User).filter(User.id == opponent_id).first()
-        my_target = active_battle.target_a if active_battle.user_a == current_user.id else active_battle.target_b
-        my_start_weight = active_battle.start_weight_a if active_battle.user_a == current_user.id else active_battle.start_weight_b
-        opponent_target = active_battle.target_b if active_battle.user_a == current_user.id else active_battle.target_a
-        opponent_start_weight = active_battle.start_weight_b if active_battle.user_a == current_user.id else active_battle.start_weight_a
-
-        # Current progress
-        my_current_weight = latest_weight or my_start_weight
-        my_progress = 0.0
-        if my_start_weight and my_start_weight != my_target:
-            my_progress = round(
-                (my_start_weight - my_current_weight) / (my_start_weight - my_target) * 100, 1
-            )
-
-        # Opponent current weight
-        opp_weight_log = (
-            db.query(WeightLog)
-            .filter(WeightLog.user_id == opponent_id)
-            .order_by(WeightLog.logged_at.desc())
-            .first()
-        )
-        opp_current_weight = opp_weight_log.weight if opp_weight_log else opponent_start_weight
-        opp_progress = 0.0
-        if opponent_start_weight and opponent_start_weight != opponent_target:
-            opp_progress = round(
-                (opponent_start_weight - opp_current_weight) / (opponent_start_weight - opponent_target) * 100, 1
-            )
-
-        pk_data = {
-            "id": active_battle.id,
-            "name": active_battle.name,
-            "opponent_nickname": opponent.nickname if opponent else None,
-            "opponent_avatar": opponent.avatar if opponent else None,
-            "start_date": active_battle.start_date.isoformat() if active_battle.start_date else None,
-            "end_date": active_battle.end_date.isoformat() if active_battle.end_date else None,
-            "reward": active_battle.reward,
-            "my_target": my_target,
-            "my_start_weight": my_start_weight,
-            "my_current_weight": my_current_weight,
-            "my_progress": my_progress,
-            "opponent_target": opponent_target,
-            "opponent_start_weight": opponent_start_weight,
-            "opponent_current_weight": opp_current_weight,
-            "opponent_progress": opp_progress,
-            "days_remaining": (active_battle.end_date - date.today()).days if active_battle.end_date else None,
-        }
+        from app.routers.pk import _get_battle_details_helper
+        pk_data = _get_battle_details_helper(active_battle, db).model_dump()
 
     # --- Today's check-in status ---
     today_weight_log = (
@@ -200,5 +155,5 @@ def get_dashboard(
             "dinner": meals[2],
             "snack": meals[3],
         },
-        "pk_battle": pk_data,
+        "pk": pk_data,
     }

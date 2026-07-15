@@ -731,10 +731,15 @@ onMounted(async () => {
 
 .chart-bar {
   width: 16px;
-  background: linear-gradient(180deg, #5ac8fa, #007aff);
-  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, rgba(0, 122, 255, 0.15) 0%, #007aff 100%);
+  border-radius: 8px 8px 0 0;
   min-height: 10px;
-  transition: height 0.4s ease;
+  transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.2s, box-shadow 0.2s;
+}
+
+.chart-bar:hover {
+  background: linear-gradient(180deg, #5ac8fa 0%, #007aff 100%);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 .chart-bar-label {

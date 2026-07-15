@@ -401,7 +401,7 @@ async function fetchDayData() {
         return true
       })
       .map(l => ({
-        id: l.id,
+        id: l.food_id,
         name: l.food_name,
         category: '',
         calories: l.amount > 0 ? Math.round(l.calories / l.amount * 100) : 0,

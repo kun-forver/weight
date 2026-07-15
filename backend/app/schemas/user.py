@@ -106,3 +106,13 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+
+
+class FriendshipResponse(BaseModel):
+    """Schema for a friend in the friends list."""
+
+    id: int  # friendship ID
+    friend_id: int
+    friend_name: str
+    friend_avatar: str | None = None
+    status: str  # "accepted" or "pending"
