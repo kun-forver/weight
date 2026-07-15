@@ -164,10 +164,10 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">性别</label>
-            <select v-model="editForm.gender" class="form-input">
-              <option value="">未设置</option>
-              <option value="male">男</option>
-              <option value="female">女</option>
+            <select v-model.number="editForm.gender" class="form-input">
+              <option :value="null">未设置</option>
+              <option :value="1">男</option>
+              <option :value="0">女</option>
             </select>
           </div>
           <div class="form-group">
@@ -181,13 +181,19 @@
             <input v-model.number="editForm.height" type="number" placeholder="如 170" class="form-input" />
           </div>
           <div class="form-group">
+            <label class="form-label">体重(kg)</label>
+            <input v-model.number="editForm.weight" type="number" step="0.1" placeholder="如 70.0" class="form-input" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
             <label class="form-label">目标体重(kg)</label>
             <input v-model.number="editForm.target_weight" type="number" step="0.1" placeholder="如 60.0" class="form-input" />
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">每日热量目标(kcal)</label>
-          <input v-model.number="editForm.daily_calorie_goal" type="number" placeholder="如 1800" class="form-input" />
+          <div class="form-group">
+            <label class="form-label">每日热量(kcal)</label>
+            <input v-model.number="editForm.daily_calorie_goal" type="number" placeholder="如 1800" class="form-input" />
+          </div>
         </div>
         <button class="btn-primary" @click="saveProfile" :disabled="saving">
           {{ saving ? '保存中...' : '保存' }}
@@ -261,9 +267,10 @@ const settings = reactive({
 
 const editForm = ref({
   nickname: '',
-  gender: '',
+  gender: null,
   height: '',
   age: '',
+  weight: '',
   target_weight: '',
   daily_calorie_goal: '',
 })
@@ -275,8 +282,8 @@ const userInitial = computed(() => {
 })
 
 const genderText = computed(() => {
-  if (user.value?.gender === 'male') return '男'
-  if (user.value?.gender === 'female') return '女'
+  if (user.value?.gender === 1) return '男'
+  if (user.value?.gender === 0) return '女'
   return ''
 })
 
@@ -344,9 +351,10 @@ function friendStatusText(status) {
 function openEditSheet() {
   editForm.value = {
     nickname: user.value?.nickname || '',
-    gender: user.value?.gender || '',
+    gender: user.value?.gender ?? null,
     height: user.value?.height || '',
     age: user.value?.age || '',
+    weight: latestWeight.value?.weight || '',
     target_weight: user.value?.target_weight || '',
     daily_calorie_goal: user.value?.daily_calorie_goal || '',
   }
@@ -362,12 +370,17 @@ async function saveProfile() {
   try {
     const data = {}
     if (editForm.value.nickname) data.nickname = editForm.value.nickname
-    if (editForm.value.gender) data.gender = editForm.value.gender
+    if (editForm.value.gender !== null) data.gender = editForm.value.gender
     if (editForm.value.height) data.height = Number(editForm.value.height)
     if (editForm.value.age) data.age = Number(editForm.value.age)
     if (editForm.value.target_weight) data.target_weight = Number(editForm.value.target_weight)
     if (editForm.value.daily_calorie_goal) data.daily_calorie_goal = Number(editForm.value.daily_calorie_goal)
     await authStore.updateProfile(data)
+    // Save weight separately via weights API
+    if (editForm.value.weight) {
+      await api.post('/weights', { weight: Number(editForm.value.weight) })
+    }
+    await fetchLatestWeight()
     closeEditSheet()
   } catch (e) {
     alert('保存失败，请重试')

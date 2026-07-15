@@ -9,6 +9,7 @@ import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
+from email.utils import formataddr
 
 from app.config import settings
 
@@ -25,7 +26,7 @@ def generate_code() -> str:
 def send_verification_email(to_email: str, code: str) -> bool:
     """Send a verification code email via SMTP."""
     msg = MIMEMultipart("alternative")
-    msg["From"] = f"{Header(settings.SMTP_FROM_NAME, 'utf-8')} <{settings.SMTP_USER}>"
+    msg["From"] = formataddr((settings.SMTP_FROM_NAME, settings.SMTP_USER))
     msg["To"] = to_email
     msg["Subject"] = Header("减脂PK - 验证码", "utf-8")
 
