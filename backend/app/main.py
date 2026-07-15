@@ -4,6 +4,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import auth, dashboard, food, friends, pk, weight
 
@@ -12,6 +13,12 @@ app = FastAPI(
     description="Fat Loss PK - A weight loss competition application",
     version="1.0.0",
 )
+
+# Ensure uploads directory exists
+os.makedirs("uploads/avatars", exist_ok=True)
+
+# Serve uploaded files
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # CORS - restrict to your domain in production
 allowed_origins = os.environ.get("CORS_ORIGINS", "http://localhost:8080,http://yoyo678.cc.cd,https://yoyo678.cc.cd").split(",")

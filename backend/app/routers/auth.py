@@ -1,6 +1,9 @@
 """Authentication router: register, login, me, profile, email verification."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -124,6 +127,40 @@ def update_profile(
     update_data = payload.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(current_user, key, value)
+    db.commit()
+    db.refresh(current_user)
+    return UserResponse.model_validate(current_user)
+
+
+@router.post("/avatar", response_model=UserResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Upload and set user avatar."""
+    # Validate file type
+    allowed_types = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="仅支持 JPG/PNG/GIF/WebP 格式",
+        )
+    # Validate file size (max 5MB)
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="图片大小不能超过 5MB",
+        )
+    # Generate filename
+    ext = file.filename.rsplit(".", 1)[-1] if "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    filepath = os.path.join("uploads", "avatars", filename)
+    with open(filepath, "wb") as f:
+        f.write(content)
+    # Update user avatar
+    current_user.avatar = f"/uploads/avatars/{filename}"
     db.commit()
     db.refresh(current_user)
     return UserResponse.model_validate(current_user)

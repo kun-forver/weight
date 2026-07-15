@@ -3,7 +3,12 @@
     <!-- Blue Gradient Header -->
     <div class="profile-header">
       <div class="header-top">
-        <div class="avatar-large">{{ userInitial }}</div>
+        <div class="avatar-large" @click="triggerAvatarUpload">
+          <img v-if="user.avatar" :src="user.avatar" class="avatar-img" alt="头像" />
+          <span v-else>{{ userInitial }}</span>
+          <span class="avatar-edit-hint">📷</span>
+        </div>
+        <input type="file" ref="avatarInput" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none" @change="handleAvatarUpload" />
         <div class="user-info">
           <div class="user-name">{{ userNickname }}</div>
           <div class="user-tags">
@@ -49,11 +54,11 @@
       </div>
       <div class="bd-item">
         <span class="bd-label">体脂率</span>
-        <span class="bd-value">{{ latestWeight?.body_fat || '-' }}<span class="bd-unit">%</span></span>
+        <span class="bd-value">{{ bodyFat }}<span class="bd-unit" v-if="bodyFat !== '-'">%</span></span>
       </div>
       <div class="bd-item">
         <span class="bd-label">肌肉量</span>
-        <span class="bd-value">{{ latestWeight?.muscle || '-' }}<span class="bd-unit">kg</span></span>
+        <span class="bd-value">{{ muscleMass }}<span class="bd-unit" v-if="muscleMass !== '-'">kg</span></span>
       </div>
       <div class="bd-item">
         <span class="bd-label">BMI</span>
@@ -259,6 +264,7 @@ const showFriendSheet = ref(false)
 const friendSearchQuery = ref('')
 const searchUsersResults = ref([])
 const friendSearched = ref(false)
+const avatarInput = ref(null)
 
 const settings = reactive({
   notifications: true,
@@ -315,6 +321,30 @@ const bmiClass = computed(() => {
   return 'bmi-very-high'
 })
 
+const bodyFat = computed(() => {
+  const weight = latestWeight.value?.weight
+  const height = user.value?.height
+  const age = user.value?.age
+  const gender = user.value?.gender
+  if (weight && height && age && gender !== null && gender !== undefined) {
+    const bmiVal = weight / Math.pow(height / 100, 2)
+    // BMI-based body fat estimation: 1.2*BMI + 0.23*age - 10.8*gender - 5.4
+    const bf = 1.2 * bmiVal + 0.23 * age - 10.8 * gender - 5.4
+    return Math.max(0, bf).toFixed(1)
+  }
+  return '-'
+})
+
+const muscleMass = computed(() => {
+  const weight = latestWeight.value?.weight
+  const bf = parseFloat(bodyFat.value)
+  if (weight && !isNaN(bf)) {
+    // Lean body mass = weight * (1 - bodyfat%)
+    return (weight * (1 - bf / 100)).toFixed(1)
+  }
+  return '-'
+})
+
 const goalProgressPct = computed(() => {
   const target = user.value?.target_weight
   const current = latestWeight.value?.weight
@@ -336,6 +366,32 @@ const remainingWeight = computed(() => {
 function getInitial(name) {
   if (!name) return '?'
   return name.charAt(0).toUpperCase()
+}
+
+function triggerAvatarUpload() {
+  avatarInput.value?.click()
+}
+
+async function handleAvatarUpload(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  if (file.size > 5 * 1024 * 1024) {
+    alert('图片大小不能超过 5MB')
+    return
+  }
+  const formData = new FormData()
+  formData.append('file', file)
+  try {
+    const res = await api.post('/auth/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    authStore.user = res.data
+    localStorage.setItem('user', JSON.stringify(res.data))
+  } catch (e) {
+    alert('头像上传失败')
+  } finally {
+    avatarInput.value.value = ''
+  }
 }
 
 function friendStatusClass(status) {
@@ -498,6 +554,29 @@ onMounted(async () => {
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-edit-hint {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-info {
