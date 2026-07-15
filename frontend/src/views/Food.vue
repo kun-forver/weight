@@ -363,7 +363,34 @@ async function fetchDayData() {
       api.get(`/food-logs/summary?date=${currentDate.value}`),
       api.get(`/food-logs?date=${currentDate.value}`),
     ])
-    summary.value = summaryRes.data
+    // Backend returns a list of per-meal summaries; transform to object
+    const rawSummaries = summaryRes.data || []
+    const mealsMap = {}
+    let totalCal = 0
+    let totalProtein = 0
+    let totalCarbs = 0
+    let totalFat = 0
+    for (const s of rawSummaries) {
+      mealsMap[s.meal_type] = {
+        calories: s.total_calories || 0,
+        protein: s.total_protein || 0,
+        carbs: s.total_carbs || 0,
+        fat: s.total_fat || 0,
+        count: s.count || 0,
+      }
+      totalCal += s.total_calories || 0
+      totalProtein += s.total_protein || 0
+      totalCarbs += s.total_carbs || 0
+      totalFat += s.total_fat || 0
+    }
+    summary.value = {
+      total_calories: totalCal,
+      total_protein: totalProtein,
+      total_carbs: totalCarbs,
+      total_fat: totalFat,
+      remaining_calories: Math.max(0, (dailyGoal.value || 2000) - totalCal),
+      meals: mealsMap,
+    }
     foodLogs.value = logsRes.data || []
     // Build quick foods from recent logs
     const seen = new Set()
