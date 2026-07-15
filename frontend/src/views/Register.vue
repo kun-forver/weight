@@ -35,7 +35,7 @@
             v-model="form.verification_code"
             type="text"
             placeholder="验证码"
-            class="auth-input"
+            class="auth-input code-input"
             maxlength="6"
           />
           <button
@@ -44,7 +44,7 @@
             :disabled="codeCooldown > 0 || sendingCode"
             @click="handleSendCode"
           >
-            {{ codeCooldown > 0 ? `${codeCooldown}s` : (sendingCode ? '...' : '获取') }}
+            {{ codeCooldown > 0 ? `${codeCooldown}s` : (sendingCode ? '...' : '获取验证码') }}
           </button>
         </div>
         <div class="input-group">
@@ -55,15 +55,6 @@
             placeholder="密码(至少8位,含两种字符类型)"
             class="auth-input"
             autocomplete="new-password"
-          />
-        </div>
-        <div class="input-group">
-          <span class="input-icon">✨</span>
-          <input
-            v-model="form.nickname"
-            type="text"
-            placeholder="昵称(选填)"
-            class="auth-input"
           />
         </div>
 
@@ -96,7 +87,6 @@ const form = reactive({
   email: '',
   verification_code: '',
   password: '',
-  nickname: '',
 })
 const errorMsg = ref('')
 const successMsg = ref('')
@@ -236,6 +226,7 @@ async function handleRegister() {
 
 .code-group {
   gap: 8px;
+  padding-right: 8px;
 }
 
 .input-icon {
@@ -254,20 +245,23 @@ async function handleRegister() {
   outline: none;
 }
 
+.code-input {
+  min-width: 0;
+}
+
 .auth-input::placeholder {
   color: #aeaeb2;
 }
 
 .btn-send-code {
   flex-shrink: 0;
-  height: 36px;
-  width: 56px;
-  padding: 0;
+  height: 38px;
+  padding: 0 12px;
   background: #007aff;
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
