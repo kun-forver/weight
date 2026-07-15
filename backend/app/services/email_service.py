@@ -25,7 +25,7 @@ def generate_code() -> str:
 def send_verification_email(to_email: str, code: str) -> bool:
     """Send a verification code email via SMTP."""
     msg = MIMEMultipart("alternative")
-    msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_USER}>"
+    msg["From"] = f"{Header(settings.SMTP_FROM_NAME, 'utf-8')} <{settings.SMTP_USER}>"
     msg["To"] = to_email
     msg["Subject"] = Header("减脂PK - 验证码", "utf-8")
 
