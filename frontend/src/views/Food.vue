@@ -19,7 +19,7 @@
     <!-- Calorie Summary -->
     <div class="card summary-card" v-if="summary">
       <div class="summary-ring-mini">
-        <CalorieRingMini :consumed="summary.total_calories || 0" :goal="dailyGoal" />
+        <CalorieRingMini :consumed="summary.total_calories || 0" :goal="dailyGoal" :size="100" />
       </div>
       <div class="summary-stats">
         <div class="ss-item">
@@ -55,8 +55,11 @@
         placeholder="搜索食物..."
         class="search-input"
         @keyup.enter="doSearch"
+        :disabled="searching"
       />
-      <button class="search-btn" @click="doSearch">🔍</button>
+      <button class="search-btn" @click="doSearch" :disabled="searching">
+        {{ searching ? '...' : '🔍' }}
+      </button>
     </div>
 
     <!-- Category Pills -->
@@ -158,8 +161,11 @@
             placeholder="搜索食物名称..."
             class="search-input"
             @keyup.enter="sheetSearch"
+            :disabled="sheetSearching"
           />
-          <button class="search-btn" @click="sheetSearch">🔍</button>
+          <button class="search-btn" @click="sheetSearch" :disabled="sheetSearching">
+            {{ sheetSearching ? '...' : '🔍' }}
+          </button>
         </div>
 
         <div class="sheet-results">
@@ -275,6 +281,7 @@ const loading = ref(false)
 
 const searchQuery = ref('')
 const searchResults = ref([])
+const searching = ref(false)
 const activeCategory = ref('all')
 
 const showAddSheet = ref(false)
@@ -286,6 +293,7 @@ const saving = ref(false)
 const sheetSearchQuery = ref('')
 const sheetResults = ref([])
 const sheetSearched = ref(false)
+const sheetSearching = ref(false)
 
 const showCustomForm = ref(false)
 const customFood = ref({
@@ -419,12 +427,21 @@ async function fetchDayData() {
 }
 
 async function doSearch() {
-  if (!searchQuery.value.trim()) return
+  if (!searchQuery.value.trim() || searching.value) return
+  searching.value = true
+  searchResults.value = []
   try {
     const res = await api.get(`/foods/search?q=${encodeURIComponent(searchQuery.value)}`)
     searchResults.value = res.data || []
+    if (searchResults.value.length === 0) {
+      alert('未找到相关食物，可尝试点击下方加号添加“自定义食物”')
+    }
   } catch (e) {
+    const detail = e.response?.data?.detail
+    alert('搜索失败: ' + (typeof detail === 'string' ? detail : e.message))
     searchResults.value = []
+  } finally {
+    searching.value = false
   }
 }
 
@@ -454,14 +471,23 @@ function closeAddSheet() {
 }
 
 async function sheetSearch() {
-  if (!sheetSearchQuery.value.trim()) return
+  if (!sheetSearchQuery.value.trim() || sheetSearching.value) return
+  sheetSearching.value = true
+  sheetResults.value = []
   try {
     const res = await api.get(`/foods/search?q=${encodeURIComponent(sheetSearchQuery.value)}`)
     sheetResults.value = res.data || []
     sheetSearched.value = true
+    if (sheetResults.value.length === 0) {
+      alert('未找到相关食物，可尝试点击下方“创建自定义食物”')
+    }
   } catch (e) {
+    const detail = e.response?.data?.detail
+    alert('搜索失败: ' + (typeof detail === 'string' ? detail : e.message))
     sheetResults.value = []
     sheetSearched.value = true
+  } finally {
+    sheetSearching.value = false
   }
 }
 
@@ -612,10 +638,13 @@ onMounted(() => {
 
 .summary-ring-mini {
   flex-shrink: 0;
+  width: 100px;
+  height: 100px;
 }
 
 .summary-ring-mini :deep(.calorie-ring) {
   width: 100px;
+  height: 100px;
 }
 
 .summary-ring-mini :deep(svg) {
@@ -624,11 +653,18 @@ onMounted(() => {
 }
 
 .summary-ring-mini :deep(.consumed-value) {
-  font-size: 22px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .summary-ring-mini :deep(.consumed-label) {
-  font-size: 10px;
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+.summary-ring-mini :deep(.goal-text) {
+  display: none;
 }
 
 .summary-stats {

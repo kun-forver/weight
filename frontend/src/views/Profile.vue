@@ -388,7 +388,8 @@ async function handleAvatarUpload(e) {
     authStore.user = res.data
     localStorage.setItem('user', JSON.stringify(res.data))
   } catch (e) {
-    alert('头像上传失败')
+    const detail = e.response?.data?.detail
+    alert('头像上传失败: ' + (typeof detail === 'string' ? detail : e.message))
   } finally {
     avatarInput.value.value = ''
   }

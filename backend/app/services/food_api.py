@@ -11,7 +11,7 @@ class OpenFoodFactsService:
 
     def __init__(self) -> None:
         self.base_url = settings.OFF_API_URL
-        self.timeout = 15.0
+        self.timeout = 3.0
 
     async def search(self, query: str) -> list[dict[str, Any]]:
         """Search for food products on Open Food Facts.
