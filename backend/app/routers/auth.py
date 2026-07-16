@@ -3,7 +3,7 @@
 import os
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Request
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -15,14 +15,21 @@ from app.schemas.user import (
     UserLogin,
     UserResponse,
     UserUpdate,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    ChangePasswordRequest,
+    validate_password,
 )
 from app.services.auth import (
     create_access_token,
     get_current_user,
     hash_password,
     verify_password,
+    create_reset_token,
+    decode_reset_token,
 )
-from app.services.email_service import send_code, verify_code
+from app.services.email_service import send_code, verify_code, send_reset_password_email
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -164,3 +171,79 @@ async def upload_avatar(
     db.commit()
     db.refresh(current_user)
     return UserResponse.model_validate(current_user)
+
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """Generate reset token and email it (or print in console) for password reset."""
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="未找到绑定该邮箱的用户",
+        )
+
+    # Generate token
+    token = create_reset_token(user.email)
+
+    # Build reset link dynamically (based on Origin / referer header, or fallback)
+    origin = request.headers.get("origin") or "http://yoyo678.cc.cd"
+    reset_link = f"{origin}/reset-password?token={token}"
+
+    # Send email
+    send_reset_password_email(user.email, reset_link)
+
+    return {"message": "重置链接已发送到您的邮箱，请在 15 分钟内处理"}
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+def reset_password(
+    payload: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    """Verify reset token and reset password to 123456 by default."""
+    email = decode_reset_token(payload.token)
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="用户不存在或已被删除",
+        )
+
+    # Reset password to 123456
+    user.password_hash = hash_password("123456")
+    db.commit()
+    return {"message": "密码已重置为 123456，请重新登录"}
+
+
+@router.post("/change-password", status_code=status.HTTP_200_OK)
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Change the user's password from their profile settings page."""
+    # Verify old password
+    if not verify_password(payload.old_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="原密码输入错误",
+        )
+
+    # Validate new password complexity
+    try:
+        validate_password(payload.new_password)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    # Save new password
+    current_user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "密码修改成功"}

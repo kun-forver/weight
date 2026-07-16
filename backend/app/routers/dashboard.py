@@ -16,20 +16,8 @@ from app.services.auth import get_current_user
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
-@router.get("")
-def get_dashboard(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Return all data for the homepage dashboard.
-
-    Includes:
-    - Today's calorie summary (consumed, remaining vs goal, exercise)
-    - Nutrition breakdown (protein/carbs/fat current vs estimated target)
-    - Latest weight with change from previous
-    - Today's food logs grouped by meal type
-    - Active PK battle details
-    """
+def generate_dashboard_data(user: User, db: Session) -> dict:
+    """Compute dashboard data for a given user."""
     # --- Today's food logs ---
     today_start = datetime.combine(date.today(), datetime.min.time())
     today_end = today_start + timedelta(days=1)
@@ -38,7 +26,7 @@ def get_dashboard(
         db.query(FoodLog, Food.name)
         .join(Food, FoodLog.food_id == Food.id, isouter=True)
         .filter(
-            FoodLog.user_id == current_user.id,
+            FoodLog.user_id == user.id,
             FoodLog.logged_at >= today_start,
             FoodLog.logged_at < today_end,
         )
@@ -71,7 +59,7 @@ def get_dashboard(
             })
 
     # --- Calorie goal ---
-    calorie_goal = current_user.daily_calorie_goal or 2000
+    calorie_goal = user.daily_calorie_goal or 2000
     remaining_calories = calorie_goal - total_calories
 
     # --- Estimated nutrition targets (based on calorie goal) ---
@@ -84,13 +72,13 @@ def get_dashboard(
     # --- Weight data ---
     latest_weight_log = (
         db.query(WeightLog)
-        .filter(WeightLog.user_id == current_user.id)
+        .filter(WeightLog.user_id == user.id)
         .order_by(WeightLog.logged_at.desc())
         .first()
     )
     previous_weight_log = (
         db.query(WeightLog)
-        .filter(WeightLog.user_id == current_user.id)
+        .filter(WeightLog.user_id == user.id)
         .order_by(WeightLog.logged_at.desc())
         .offset(1)
         .first()
@@ -105,7 +93,7 @@ def get_dashboard(
         db.query(PKBattle)
         .filter(
             PKBattle.status.in_([0, 1]),
-            (PKBattle.user_a == current_user.id) | (PKBattle.user_b == current_user.id),
+            (PKBattle.user_a == user.id) | (PKBattle.user_b == user.id),
         )
         .order_by(PKBattle.created_at.desc())
         .first()
@@ -120,7 +108,7 @@ def get_dashboard(
     today_weight_log = (
         db.query(WeightLog)
         .filter(
-            WeightLog.user_id == current_user.id,
+            WeightLog.user_id == user.id,
             WeightLog.logged_at >= today_start,
             WeightLog.logged_at < today_end,
         )
@@ -144,7 +132,7 @@ def get_dashboard(
             "latest": latest_weight,
             "previous": previous_weight,
             "change": weight_change,
-            "target_weight": current_user.target_weight,
+            "target_weight": user.target_weight,
             "checked_in_today": today_weight_log is not None,
             "body_fat": latest_weight_log.body_fat if latest_weight_log else None,
             "muscle": latest_weight_log.muscle if latest_weight_log else None,
@@ -157,3 +145,12 @@ def get_dashboard(
         },
         "pk": pk_data,
     }
+
+
+@router.get("")
+def get_dashboard(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Return all data for the homepage dashboard."""
+    return generate_dashboard_data(current_user, db)

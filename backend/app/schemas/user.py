@@ -85,7 +85,9 @@ class UserResponse(BaseModel):
     age: int | None = None
     target_weight: float | None = None
     daily_calorie_goal: int | None = None
+    role: str = "user"
     created_at: datetime | None = None
+
 
 
 class UserUpdate(BaseModel):
@@ -116,3 +118,20 @@ class FriendshipResponse(BaseModel):
     friend_name: str
     friend_avatar: str | None = None
     status: str  # "accepted" or "pending"
+
+
+class ForgotPasswordRequest(BaseModel):
+    """Schema for requesting a password reset email."""
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    """Schema for resetting a password using a token."""
+    token: str
+
+
+class ChangePasswordRequest(BaseModel):
+    """Schema for changing password from settings."""
+    old_password: str
+    new_password: str
+

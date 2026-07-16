@@ -143,6 +143,10 @@
         <span class="setting-label">📤 导出数据</span>
         <span class="setting-arrow">›</span>
       </div>
+      <div class="setting-item clickable" @click="openPasswordSheet">
+        <span class="setting-label">🔐 修改密码</span>
+        <span class="setting-arrow">›</span>
+      </div>
       <div class="setting-item logout" @click="handleLogout">
         <span class="setting-label">🚪 退出登录</span>
       </div>
@@ -242,6 +246,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Bottom Sheet: Change Password -->
+    <div v-if="showPasswordSheet" class="bottom-sheet-backdrop" @click="closePasswordSheet"></div>
+    <div v-if="showPasswordSheet" class="bottom-sheet">
+      <div class="sheet-header">
+        <span class="sheet-title">修改密码</span>
+        <button class="sheet-close" @click="closePasswordSheet">✕</button>
+      </div>
+      <div class="edit-form">
+        <div class="form-group">
+          <label class="form-label">当前密码</label>
+          <input v-model="passwordForm.old_password" type="password" placeholder="请输入当前密码" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">新密码</label>
+          <input v-model="passwordForm.new_password" type="password" placeholder="请输入新密码（至少8位）" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">确认新密码</label>
+          <input v-model="passwordForm.confirm_password" type="password" placeholder="请再次输入新密码" class="form-input" />
+        </div>
+        
+        <p v-if="passwordError" class="error-msg-mini">{{ passwordError }}</p>
+        <p v-if="passwordSuccess" class="success-msg-mini">{{ passwordSuccess }}</p>
+
+        <button class="btn-primary" @click="savePassword" :disabled="savingPassword">
+          {{ savingPassword ? '修改中...' : '确认修改' }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -265,6 +299,12 @@ const friendSearchQuery = ref('')
 const searchUsersResults = ref([])
 const friendSearched = ref(false)
 const avatarInput = ref(null)
+
+const showPasswordSheet = ref(false)
+const passwordForm = ref({ old_password: '', new_password: '', confirm_password: '' })
+const passwordError = ref('')
+const passwordSuccess = ref('')
+const savingPassword = ref(false)
 
 const settings = reactive({
   notifications: true,
@@ -382,9 +422,7 @@ async function handleAvatarUpload(e) {
   const formData = new FormData()
   formData.append('file', file)
   try {
-    const res = await api.post('/auth/avatar', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    const res = await api.post('/auth/avatar', formData)
     authStore.user = res.data
     localStorage.setItem('user', JSON.stringify(res.data))
   } catch (e) {
@@ -504,6 +542,53 @@ async function fetchLatestWeight() {
     latestWeight.value = res.data
   } catch (e) {
     latestWeight.value = null
+  }
+}
+
+function openPasswordSheet() {
+  passwordForm.value = { old_password: '', new_password: '', confirm_password: '' }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+  showPasswordSheet.value = true
+}
+
+function closePasswordSheet() {
+  showPasswordSheet.value = false
+}
+
+async function savePassword() {
+  const f = passwordForm.value
+  if (!f.old_password || !f.new_password || !f.confirm_password) {
+    passwordError.value = '请填写所有密码字段'
+    return
+  }
+  if (f.new_password !== f.confirm_password) {
+    passwordError.value = '新密码和确认密码输入不一致'
+    return
+  }
+  if (f.new_password.length < 8) {
+    passwordError.value = '新密码长度至少为 8 位'
+    return
+  }
+  
+  savingPassword.value = true
+  passwordError.value = ''
+  passwordSuccess.value = ''
+  
+  try {
+    const res = await api.post('/auth/change-password', {
+      old_password: f.old_password,
+      new_password: f.new_password
+    })
+    passwordSuccess.value = res.data.message || '密码修改成功！'
+    setTimeout(() => {
+      closePasswordSheet()
+    }, 1500)
+  } catch (e) {
+    const detail = e.response?.data?.detail
+    passwordError.value = typeof detail === 'string' ? detail : '修改失败，请检查原密码'
+  } finally {
+    savingPassword.value = false
   }
 }
 
@@ -1151,5 +1236,21 @@ select.form-input {
   padding: 40px 20px;
   color: #aeaeb2;
   font-size: 14px;
+}
+
+.error-msg-mini {
+  color: #ff3b30;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.success-msg-mini {
+  color: #34c759;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
 </style>

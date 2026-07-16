@@ -21,7 +21,8 @@ class Settings(BaseSettings):
     JWT_EXPIRE_DAYS: int = 7
 
     # Open Food Facts API
-    OFF_API_URL: str = "https://world.openfoodfacts.org"
+    OFF_API_URL: str = "https://cn.openfoodfacts.org"
+
 
     # Email SMTP settings (QQ Mail)
     SMTP_HOST: str = "smtp.qq.com"

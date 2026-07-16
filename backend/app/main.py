@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.routers import auth, dashboard, food, friends, pk, weight
+from app.routers import auth, dashboard, food, friends, pk, weight, admin
 
 app = FastAPI(
     title="减脂PK Backend",
@@ -35,6 +35,12 @@ app.add_middleware(
 async def startup_event():
     """Run on application startup."""
     print("Fat Loss PK backend starting up...")
+    try:
+        from app.init_db import init_db
+        init_db()
+    except Exception as e:
+        print(f"Error during init_db on startup: {e}")
+
 
 
 @app.on_event("shutdown")
@@ -56,6 +62,7 @@ app.include_router(weight.router, prefix="/api")
 app.include_router(friends.router, prefix="/api")
 app.include_router(pk.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
 
 
 if __name__ == "__main__":

@@ -25,6 +25,8 @@ class User(Base):
     age: Mapped[int] = mapped_column(Integer, nullable=True)
     target_weight: Mapped[float] = mapped_column(Float, nullable=True, comment="target weight in kg")
     daily_calorie_goal: Mapped[int] = mapped_column(Integer, nullable=True, comment="daily calorie goal in kcal")
+    role: Mapped[str] = mapped_column(String(20), default="user", server_default=text("'user'"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
+

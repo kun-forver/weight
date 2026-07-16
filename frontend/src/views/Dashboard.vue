@@ -10,8 +10,7 @@
         </div>
       </div>
       <div class="header-right">
-        <button class="icon-btn">🔔</button>
-        <button class="icon-btn">⚙️</button>
+        <button class="icon-btn" @click="goToProfile">⚙️</button>
       </div>
     </header>
 
@@ -47,11 +46,31 @@
         </div>
       </div>
 
+      <!-- Quick Action Grid -->
+      <div class="quick-action-grid">
+        <router-link to="/weight" class="action-tile">
+          <span class="tile-icon">⚖️</span>
+          <span class="tile-label">记录体重</span>
+        </router-link>
+        <router-link to="/food" class="action-tile">
+          <span class="tile-icon">🍎</span>
+          <span class="tile-label">记录饮食</span>
+        </router-link>
+        <router-link to="/pk" class="action-tile">
+          <span class="tile-icon">⚔️</span>
+          <span class="tile-label">减脂对战</span>
+        </router-link>
+        <router-link to="/profile" class="action-tile">
+          <span class="tile-icon">👤</span>
+          <span class="tile-label">个人主页</span>
+        </router-link>
+      </div>
+
       <!-- Nutrition Progress -->
       <div class="card nutrition-card">
         <div class="card-title-row">
-          <span class="card-title">营养素</span>
-          <span class="card-subtitle">今日摄入</span>
+          <span class="card-title">营养分析</span>
+          <span class="card-subtitle">今日摄入比例</span>
         </div>
         <div class="nutrition-item">
           <div class="nutri-header">
@@ -88,11 +107,11 @@
         <div class="weight-card-content">
           <div class="weight-top">
             <div class="weight-left">
-              <div class="weight-label">当前体重</div>
+              <div class="weight-label">最新体重</div>
               <div class="weight-value">
                 {{ weightData.current }}<span class="weight-unit">kg</span>
               </div>
-              <div class="weight-change" :class="weightChangeClass">
+              <div class="weight-change" :class="weightChangeClass" v-if="weightData.change !== null">
                 {{ weightChangeIcon }} {{ Math.abs(weightData.change || 0).toFixed(1) }}kg vs 昨日
               </div>
             </div>
@@ -107,15 +126,6 @@
               </div>
             </div>
           </div>
-          <!-- Mini bar chart -->
-          <div class="mini-chart">
-            <div
-              v-for="(val, i) in weightTrend"
-              :key="i"
-              class="mini-bar"
-              :style="{ height: barHeight(val) }"
-            ></div>
-          </div>
           <!-- Progress to target -->
           <div class="target-progress">
             <div class="tp-label">距目标进度</div>
@@ -127,85 +137,39 @@
         </div>
       </div>
 
-      <!-- Today's Food Logs -->
-      <div class="section-title">今日饮食</div>
-      <div v-for="meal in meals" :key="meal.type" class="meal-group">
-        <div class="meal-header">
-          <span class="meal-name">{{ meal.label }}</span>
-          <span class="meal-cal">{{ mealTotalCalories(meal.type) }} kcal</span>
-        </div>
-        <div v-if="getMealFoods(meal.type).length === 0" class="empty-meal">
-          暂无记录
-        </div>
-        <div
-          v-for="item in getMealFoods(meal.type)"
-          :key="item.id"
-          class="food-item"
-        >
-          <div class="food-emoji">{{ item.emoji || '🍽️' }}</div>
-          <div class="food-info">
-            <div class="food-name">{{ item.food_name }}</div>
-            <div class="food-meta">{{ item.protein || 0 }}g蛋白质 · {{ formatTime(item.logged_at) }}</div>
-          </div>
-          <div class="food-calories">
-            <div class="fc-value">{{ item.calories }}</div>
-            <div class="fc-unit">kcal</div>
+      <!-- Daily reports -->
+      <div class="section-title">今日速报</div>
+
+      <!-- Diet summary report -->
+      <div class="card summary-report-card" @click="goToFood">
+        <div class="src-icon">🍎</div>
+        <div class="src-info">
+          <div class="src-title">今日饮食概览</div>
+          <div class="src-desc">
+            已摄入 <strong>{{ data.calorie_summary?.consumed || 0 }}</strong> kcal，剩余可吃 <strong>{{ Math.max(0, data.calorie_summary?.remaining || 0) }}</strong> kcal
           </div>
         </div>
+        <span class="src-arrow">›</span>
       </div>
 
-      <!-- PK Battle Card -->
-      <div v-if="data.pk" class="card pk-card">
-        <div class="pk-header">
-          <span class="pk-title">⚔️ {{ data.pk.name }}</span>
-          <span class="pk-status-badge" :class="pkStatusClass(data.pk.status)">{{ pkStatusText(data.pk.status) }}</span>
-        </div>
-        <div class="pk-battle">
-          <div class="pk-side pk-left">
-            <div class="pk-avatar">{{ getInitial(data.pk.user_a?.name) }}</div>
-            <div class="pk-name">{{ data.pk.user_a?.name || '我' }}</div>
-            <div class="pk-score">{{ data.pk.user_a?.score || 0 }}</div>
-            <div class="pk-pct">{{ data.pk.user_a?.pct || 0 }}%</div>
-          </div>
-          <div class="pk-center">
-            <div class="pk-vs">VS</div>
-            <div class="pk-lead" v-if="data.pk.leader">
-              {{ data.pk.leader === data.pk.user_a?.id ? '← 领先' : '领先 →' }}
-            </div>
-          </div>
-          <div class="pk-side pk-right">
-            <div class="pk-avatar">{{ getInitial(data.pk.user_b?.name) }}</div>
-            <div class="pk-name">{{ data.pk.user_b?.name || '对手' }}</div>
-            <div class="pk-score">{{ data.pk.user_b?.score || 0 }}</div>
-            <div class="pk-pct">{{ data.pk.user_b?.pct || 0 }}%</div>
+      <!-- PK summary report -->
+      <div v-if="data.pk" class="card summary-report-card" @click="goToPK">
+        <div class="src-icon">⚔️</div>
+        <div class="src-info">
+          <div class="src-title">对战：{{ data.pk.name }}</div>
+          <div class="src-desc">
+            对战进行中 · 剩余 <strong>{{ Math.max((data.pk.days_total || 0) - (data.pk.days_elapsed || 0), 0) }}</strong> 天
           </div>
         </div>
-        <!-- Progress bar -->
-        <div class="pk-progress-section">
-          <div class="pk-progress-bar">
-            <div class="pk-progress-left" :style="{ width: (data.pk.user_a?.pct || 0) + '%' }"></div>
-            <div class="pk-progress-right" :style="{ width: (data.pk.user_b?.pct || 0) + '%' }"></div>
-          </div>
-        </div>
-        <!-- Info row -->
-        <div class="pk-info-row">
-          <div class="pk-info-item">
-            <span class="pi-icon">📅</span>
-            <span>剩余 {{ Math.max((data.pk.days_total || 0) - (data.pk.days_elapsed || 0), 0) }} 天</span>
-          </div>
-          <div class="pk-info-item">
-            <span class="pi-icon">🏆</span>
-            <span>{{ data.pk.reward || '加油挑战' }}</span>
-          </div>
-        </div>
+        <span class="src-arrow">›</span>
       </div>
-
-      <div v-else class="card pk-empty-card">
-        <div class="pk-empty-content">
-          <div class="pk-empty-emoji">🎯</div>
-          <div class="pk-empty-text">还没有进行中的对战</div>
-          <router-link to="/pk" class="pk-empty-btn">发起对战</router-link>
+      <div v-else class="card summary-report-card" @click="goToPK">
+        <div class="src-icon">🎯</div>
+        <div class="src-info">
+          <div class="src-title">暂无进行中的对战</div>
+          <div class="src-desc">点击这里，去找好友发起减脂PK挑战吧！</div>
         </div>
+        <span class="src-arrow">›</span>
       </div>
     </div>
 
@@ -229,7 +193,7 @@ const data = ref(null)
 const error = ref(null)
 
 const user = computed(() => authStore.user || JSON.parse(localStorage.getItem('user') || '{}'))
-const userNickname = computed(() => user.value?.nickname || '小伙伴')
+const userNickname = computed(() => user.value?.nickname || user.value?.username || '小伙伴')
 const userInitial = computed(() => {
   const name = user.value?.nickname || user.value?.username || 'U'
   return name.charAt(0).toUpperCase()
@@ -276,16 +240,11 @@ const weightData = computed(() => {
   }
   return {
     current: current || '-',
-    change: w.change || 0,
+    change: w.change ?? null,
     target: target || '-',
     monthly_loss: Math.abs(w.change || 0).toFixed(1),
     target_progress: target_progress,
   }
-})
-const weightTrend = computed(() => {
-  const trend = weightData.value.trend || []
-  if (trend.length === 0) return []
-  return trend.slice(-7)
 })
 
 const weightChangeClass = computed(() => {
@@ -302,61 +261,21 @@ const weightChangeIcon = computed(() => {
   return '→'
 })
 
-const meals = [
-  { type: 0, label: '🍳 早餐' },
-  { type: 1, label: '🥗 午餐' },
-  { type: 2, label: '🍲 晚餐' },
-  { type: 3, label: '🍪 加餐' },
-]
-
-function getMealFoods(mealType) {
-  if (!data.value?.meals) return []
-  const map = { 0: 'breakfast', 1: 'lunch', 2: 'dinner', 3: 'snack' }
-  const key = map[mealType]
-  return data.value.meals[key] || []
-}
-
-function mealTotalCalories(mealType) {
-  return getMealFoods(mealType).reduce((sum, f) => sum + (f.calories || 0), 0)
-}
-
 function progressPct(current, target) {
   if (!target || target <= 0) return '0%'
   return Math.min((current / target) * 100, 100) + '%'
 }
 
-function barHeight(val) {
-  const trend = weightTrend.value
-  const max = Math.max(...trend, 1)
-  const min = Math.min(...trend, 0)
-  const range = max - min || 1
-  const h = ((val - min) / range) * 100
-  return Math.max(h, 15) + 'px'
-}
-
-function getInitial(name) {
-  if (!name) return '?'
-  return name.charAt(0).toUpperCase()
-}
-
-function formatTime(timeStr) {
-  if (!timeStr) return ''
-  const d = new Date(timeStr)
-  return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
-function pkStatusClass(status) {
-  const map = { active: 'status-active', pending: 'status-pending', completed: 'status-done' }
-  return map[status] || 'status-active'
-}
-
-function pkStatusText(status) {
-  const map = { active: '进行中', pending: '待开始', completed: '已结束' }
-  return map[status] || '进行中'
-}
-
 function goToFood() {
   router.push('/food')
+}
+
+function goToPK() {
+  router.push('/pk')
+}
+
+function goToProfile() {
+  router.push('/profile')
 }
 
 async function fetchDashboard() {
@@ -374,7 +293,6 @@ async function fetchDashboard() {
         fat: { current: 0, target: 65 },
       },
       weight: { latest: 0, previous: 0, change: 0, target_weight: 0 },
-      meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
       pk: null,
     }
   } finally {
@@ -404,6 +322,7 @@ onMounted(async () => {
   position: sticky;
   top: 0;
   z-index: 50;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header-left {
@@ -439,7 +358,6 @@ onMounted(async () => {
 
 .header-right {
   display: flex;
-  gap: 8px;
 }
 
 .icon-btn {
@@ -469,7 +387,7 @@ onMounted(async () => {
   display: flex;
   gap: 10px;
   padding: 0 16px;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
 .stat-card {
@@ -480,6 +398,8 @@ onMounted(async () => {
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+  border: 1px solid #f0f0f2;
 }
 
 .stat-card::before {
@@ -496,28 +416,73 @@ onMounted(async () => {
 .stat-blue::before { background: #007aff; }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #86868b;
   margin-bottom: 6px;
 }
 
 .stat-value {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #1d1d1f;
 }
 
 .stat-unit {
-  font-size: 11px;
+  font-size: 10px;
   color: #aeaeb2;
   margin-top: 2px;
+}
+
+/* Quick action grid */
+.quick-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 16px;
+  margin-bottom: 14px;
+}
+
+.action-tile {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #f0f0f2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.03);
+}
+
+.action-tile:active {
+  transform: scale(0.95);
+}
+
+.tile-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.tile-label {
+  font-size: 11px;
+  color: #1d1d1f;
+  font-weight: 600;
 }
 
 .card {
   background: #fff;
   border-radius: 16px;
   padding: 16px;
-  margin: 8px 16px;
+  margin: 0 16px 14px;
+  border: 1.5px solid #f0f0f2;
 }
 
 .card-title-row {
@@ -528,18 +493,18 @@ onMounted(async () => {
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #1d1d1f;
 }
 
 .card-subtitle {
-  font-size: 12px;
+  font-size: 11px;
   color: #aeaeb2;
 }
 
 .nutrition-item {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .nutrition-item:last-child {
@@ -554,13 +519,13 @@ onMounted(async () => {
 }
 
 .nutri-name {
-  font-size: 14px;
+  font-size: 13px;
   color: #1d1d1f;
   font-weight: 500;
 }
 
 .nutri-values {
-  font-size: 12px;
+  font-size: 11px;
   color: #86868b;
 }
 
@@ -601,7 +566,7 @@ onMounted(async () => {
 .weight-card-content {
   position: relative;
   z-index: 1;
-  padding: 20px;
+  padding: 16px;
   color: #fff;
 }
 
@@ -617,33 +582,33 @@ onMounted(async () => {
 }
 
 .weight-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 4px;
 }
 
 .weight-value {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   line-height: 1;
 }
 
 .weight-unit {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .weight-change {
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 8px;
   color: rgba(255, 255, 255, 0.9);
 }
 
 .weight-right {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 }
 
 .weight-stat {
@@ -651,36 +616,15 @@ onMounted(async () => {
 }
 
 .ws-label {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 4px;
 }
 
 .ws-value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #fff;
-}
-
-.mini-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  height: 60px;
-  margin-bottom: 14px;
-  padding: 0 4px;
-}
-
-.mini-bar {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 4px 4px 0 0;
-  min-height: 15px;
-  transition: height 0.4s ease;
-}
-
-.mini-bar:last-child {
-  background: rgba(255, 255, 255, 0.9);
 }
 
 .target-progress {
@@ -690,7 +634,7 @@ onMounted(async () => {
 }
 
 .tp-label {
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
 }
@@ -711,280 +655,62 @@ onMounted(async () => {
 }
 
 .tp-pct {
-  font-size: 12px;
+  font-size: 11px;
   color: #fff;
   font-weight: 600;
-  min-width: 36px;
+  min-width: 32px;
   text-align: right;
 }
 
-.meal-group {
-  margin: 0 16px 12px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px 16px;
-}
-
-.meal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f2;
-}
-
-.meal-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1d1d1f;
-}
-
-.meal-cal {
-  font-size: 13px;
-  color: #007aff;
-  font-weight: 600;
-}
-
-.empty-meal {
-  font-size: 13px;
-  color: #aeaeb2;
-  padding: 8px 0;
-  text-align: center;
-}
-
-.food-item {
+/* Redesigned Summary report card */
+.summary-report-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.food-emoji {
+.summary-report-card:active {
+  background-color: #f5f5f7;
+}
+
+.src-icon {
   font-size: 26px;
-  width: 40px;
-  text-align: center;
-}
-
-.food-info {
-  flex: 1;
-}
-
-.food-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1d1d1f;
-}
-
-.food-meta {
-  font-size: 12px;
-  color: #86868b;
-  margin-top: 2px;
-}
-
-.food-calories {
-  text-align: right;
-}
-
-.fc-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #ff9500;
-}
-
-.fc-unit {
-  font-size: 11px;
-  color: #aeaeb2;
-}
-
-.pk-card {
-  margin-top: 8px;
-}
-
-.pk-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.pk-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1d1d1f;
-}
-
-.pk-status-badge {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 10px;
-  font-weight: 500;
-}
-
-.status-active {
-  background: #e8f5e9;
-  color: #34c759;
-}
-
-.status-pending {
-  background: #fff3cd;
-  color: #ff9500;
-}
-
-.status-done {
-  background: #f0f0f2;
-  color: #86868b;
-}
-
-.pk-battle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-.pk-side {
-  text-align: center;
-  flex: 1;
-}
-
-.pk-avatar {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
+  background: #f5f5f7;
   border-radius: 50%;
-  background: linear-gradient(135deg, #007aff, #5ac8fa);
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 auto 6px;
 }
 
-.pk-right .pk-avatar {
-  background: linear-gradient(135deg, #ff9500, #ff6b6b);
+.src-info {
+  flex: 1;
 }
 
-.pk-name {
-  font-size: 12px;
-  color: #86868b;
-}
-
-.pk-score {
-  font-size: 22px;
+.src-title {
+  font-size: 14px;
   font-weight: 700;
   color: #1d1d1f;
+}
+
+.src-desc {
+  font-size: 12px;
+  color: #86868b;
   margin-top: 2px;
 }
 
-.pk-pct {
-  font-size: 12px;
+.src-desc strong {
   color: #007aff;
   font-weight: 600;
 }
 
-.pk-right .pk-pct {
-  color: #ff9500;
-}
-
-.pk-center {
-  flex: 0 0 60px;
-  text-align: center;
-}
-
-.pk-vs {
+.src-arrow {
   font-size: 18px;
-  font-weight: 800;
   color: #aeaeb2;
+  font-family: monospace;
 }
-
-.pk-lead {
-  font-size: 10px;
-  color: #86868b;
-  margin-top: 4px;
-}
-
-.pk-progress-section {
-  margin: 12px 0;
-}
-
-.pk-progress-bar {
-  display: flex;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: #f0f0f2;
-}
-
-.pk-progress-left {
-  background: linear-gradient(90deg, #007aff, #5ac8fa);
-  transition: width 0.6s ease;
-}
-
-.pk-progress-right {
-  background: linear-gradient(90deg, #ff6b6b, #ff9500);
-  transition: width 0.6s ease;
-  margin-left: auto;
-}
-
-.pk-info-row {
-  display: flex;
-  justify-content: space-around;
-  padding-top: 8px;
-}
-
-.pk-info-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  color: #86868b;
-}
-
-.pi-icon {
-  font-size: 14px;
-}
-
-.pk-empty-card {
-  text-align: center;
-}
-
-.pk-empty-content {
-  padding: 10px 0;
-}
-
-.pk-empty-emoji {
-  font-size: 36px;
-  margin-bottom: 8px;
-}
-
-.pk-empty-text {
-  font-size: 14px;
-  color: #86868b;
-  margin-bottom: 12px;
-}
-
-.pk-empty-btn {
-  display: inline-block;
-  padding: 8px 24px;
-  background: #007aff;
-  color: #fff;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.spinner {
-  font-size: 32px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.change-down { color: #e8f5e9; }
-.change-up { color: #ffeaea; }
 </style>

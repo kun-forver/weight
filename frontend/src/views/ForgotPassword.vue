@@ -1,87 +1,70 @@
 <template>
   <div class="auth-page">
     <div class="auth-header">
-      <div class="logo-circle">⚖️</div>
-      <h1 class="auth-title">减脂PK</h1>
-      <p class="auth-subtitle">健康减脂，快乐对战</p>
+      <div class="logo-circle">🔑</div>
+      <h1 class="auth-title">找回密码</h1>
+      <p class="auth-subtitle">请填写您的注册邮箱以重置密码</p>
     </div>
 
     <div class="auth-card">
-      <div class="card-header">登录</div>
-      <form @submit.prevent="handleLogin">
+      <form v-if="!submitted" @submit.prevent="handleSendLink">
         <div class="input-group">
-          <span class="input-icon">👤</span>
+          <span class="input-icon">✉️</span>
           <input
-            v-model="form.username"
-            type="text"
-            placeholder="请输入用户名"
+            v-model="email"
+            type="email"
+            placeholder="请输入电子邮箱"
             class="auth-input"
-            autocomplete="username"
-          />
-        </div>
-        <div class="input-group">
-          <span class="input-icon">🔒</span>
-          <input
-            v-model="form.password"
-            type="password"
-            placeholder="请输入密码"
-            class="auth-input"
-            autocomplete="current-password"
+            required
+            autocomplete="email"
           />
         </div>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
         <button type="submit" class="btn-primary" :disabled="loading">
-          {{ loading ? '登录中...' : '登 录' }}
+          {{ loading ? '发送中...' : '发 送 重 置 链 接' }}
         </button>
       </form>
 
+      <div v-else class="success-container">
+        <div class="success-icon">✉️</div>
+        <p class="success-text">密码重置链接已成功发送！</p>
+        <p class="info-text">
+          请检查您的邮箱收件箱或垃圾箱。链接有效时间为 15 分钟。<br />
+          <small class="dev-hint">（如果您在开发环境下，请直接查看后端控制台输出的重置链接）</small>
+        </p>
+      </div>
+
       <div class="auth-footer">
-        还没有账号？<router-link to="/register" class="link">立即注册</router-link>
+        <router-link to="/login" class="link">返回登录</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { ref } from 'vue'
+import api from '../api'
 
-const router = useRouter()
-const authStore = useAuthStore()
-
-const form = reactive({
-  username: '',
-  password: '',
-})
-const errorMsg = ref('')
+const email = ref('')
 const loading = ref(false)
+const submitted = ref(false)
+const errorMsg = ref('')
 
-async function handleLogin() {
-  if (!form.username || !form.password) {
-    errorMsg.value = '请输入用户名和密码'
+async function handleSendLink() {
+  if (!email.value) {
+    errorMsg.value = '请输入您的注册邮箱'
     return
   }
   loading.value = true
   errorMsg.value = ''
   try {
-    const res = await authStore.login(form.username, form.password)
-    if (res.user?.role === 'admin') {
-      router.push('/admin')
-    } else {
-      router.push('/')
-    }
+    await api.post('/auth/forgot-password', { email: email.value })
+    submitted.value = true
   } catch (e) {
     const detail = e.response?.data?.detail
-    if (typeof detail === 'string') {
-      errorMsg.value = detail
-    } else if (Array.isArray(detail)) {
-      errorMsg.value = detail.map(d => d.msg || JSON.stringify(d)).join('; ')
-    } else {
-      errorMsg.value = '用户名或密码错误'
-    }
+    errorMsg.value = typeof detail === 'string' ? detail : '发送失败，请确认邮箱是否正确'
   } finally {
     loading.value = false
   }
@@ -91,7 +74,7 @@ async function handleLogin() {
 <style scoped>
 .auth-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #007aff 0%, #5ac8fa 40%, #f5f5f7 70%);
+  background: linear-gradient(180deg, #ff3b30 0%, #ff9500 40%, #f5f5f7 70%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,28 +120,22 @@ async function handleLogin() {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.card-header {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1d1d1f;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
 .input-group {
   display: flex;
   align-items: center;
   background: #f5f5f7;
   border-radius: 14px;
   padding: 0 14px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
   height: 50px;
   transition: all 0.2s;
+  border: 1px solid transparent;
 }
 
 .input-group:focus-within {
-  background: #eef4ff;
-  box-shadow: 0 0 0 2px #007aff;
+  background: #fff0f0;
+  border-color: #ff3b30;
+  box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.15);
 }
 
 .input-icon {
@@ -184,22 +161,22 @@ async function handleLogin() {
 .error-msg {
   color: #ff3b30;
   font-size: 13px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 .btn-primary {
   width: 100%;
   height: 50px;
-  background: #007aff;
+  background: #ff3b30;
   color: #fff;
   border-radius: 14px;
   font-size: 17px;
   font-weight: 600;
-  margin-top: 8px;
   transition: opacity 0.2s;
   border: none;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 59, 48, 0.3);
 }
 
 .btn-primary:active {
@@ -210,29 +187,45 @@ async function handleLogin() {
   opacity: 0.5;
 }
 
+.success-container {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: #34c759;
+  margin-bottom: 12px;
+}
+
+.success-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-bottom: 8px;
+}
+
+.info-text {
+  font-size: 13px;
+  color: #86868b;
+  line-height: 1.5;
+}
+
+.dev-hint {
+  color: #ff9500;
+  font-weight: 500;
+}
+
 .auth-footer {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 24px;
   font-size: 14px;
   color: #86868b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .link {
-  color: #007aff;
+  color: #ff3b30;
   text-decoration: none;
   font-weight: 600;
-}
-
-.footer-divider {
-  margin: 0 8px;
-  color: #d1d1d6;
-}
-
-.forgot-link {
-  color: #86868b;
-  font-weight: 500;
 }
 </style>

@@ -81,3 +81,30 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+
+def create_reset_token(email: str) -> str:
+    """Create a temporary password reset token (valid for 15 minutes)."""
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    payload = {
+        "sub": email,
+        "type": "reset",
+        "exp": expire,
+    }
+    token = jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    return token
+
+
+def decode_reset_token(token: str) -> str:
+    """Decode and verify a password reset token. Returns the email or raises."""
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        if payload.get("type") != "reset":
+            raise jwt.InvalidTokenError("Invalid token type")
+        return payload.get("sub")
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="重置链接无效或已过期",
+        )
+

@@ -90,3 +90,46 @@ def verify_code(email: str, code: str) -> bool:
     # Code is valid, remove it (one-time use)
     del _code_store[email]
     return True
+
+
+def send_reset_password_email(to_email: str, reset_link: str) -> bool:
+    """Send a password reset link email."""
+    # Check if SMTP settings are configured
+    if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+        print(f"\n[DEVELOPMENT RESET LINK] Email: {to_email} | Link: {reset_link}\n")
+        return True
+
+    msg = MIMEMultipart("alternative")
+    msg["From"] = formataddr((settings.SMTP_FROM_NAME, settings.SMTP_USER))
+    msg["To"] = to_email
+    msg["Subject"] = Header("减脂PK - 重置密码请求", "utf-8")
+
+    html_content = f"""
+    <div style="max-width:400px;margin:0 auto;font-family:sans-serif;">
+        <div style="background:#ff3b30;color:#fff;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
+            <h2 style="margin:0;">减脂PK</h2>
+        </div>
+        <div style="background:#fff;padding:30px;border:1px solid #e0e0e0;border-radius:0 0 8px 8px;text-align:center;">
+            <p style="color:#333;font-size:14px;">您收到此邮件是因为您申请重置密码。</p>
+            <p style="color:#333;font-size:14px;">请点击下方链接，系统将自动将您的密码重置为 <strong>123456</strong>：</p>
+            <p style="margin:25px 0;">
+                <a href="{reset_link}" style="background:#ff3b30;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;">立即重置密码</a>
+            </p>
+            <p style="color:#999;font-size:11px;">此链接 15 分钟内有效。如果您没有请求重置密码，请忽略此邮件。</p>
+        </div>
+    </div>
+    """
+    msg.attach(MIMEText(html_content, "html", "utf-8"))
+
+    try:
+        server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        server.sendmail(settings.SMTP_USER, [to_email], msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"[Email Error] Failed to send reset email to {to_email}: {e}")
+        # Fallback to printing in console
+        print(f"\n[DEVELOPMENT RESET LINK FALLBACK] Email: {to_email} | Link: {reset_link}\n")
+        return True
+
