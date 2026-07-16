@@ -39,6 +39,8 @@
 
       <div class="auth-footer">
         还没有账号？<router-link to="/register" class="link">立即注册</router-link>
+        <span class="footer-divider">|</span>
+        <router-link to="/forgot-password" class="link forgot-link">忘记密码？</router-link>
       </div>
     </div>
   </div>
