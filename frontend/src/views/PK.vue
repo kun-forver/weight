@@ -350,9 +350,8 @@ async function createBattle() {
   creating.value = true
   try {
     await api.post('/pk', {
-      friend_id: createForm.value.friend_id,
+      user_b: createForm.value.friend_id,
       name: createForm.value.name,
-      start_date: createForm.value.start_date,
       end_date: createForm.value.end_date,
       target_a: Number(createForm.value.target_a) || 3.0,
       target_b: Number(createForm.value.target_b) || 3.0,

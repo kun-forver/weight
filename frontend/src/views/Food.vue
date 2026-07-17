@@ -128,17 +128,26 @@
       <div
         v-for="log in getMealLogs(meal.type)"
         :key="log.id"
-        class="log-item"
+        class="swipe-container"
       >
-        <div class="log-emoji">{{ log.food_emoji || '🍽️' }}</div>
-        <div class="log-info">
-          <div class="log-name">{{ log.food_name }}</div>
-          <div class="log-meta">
-            {{ log.amount }}g · {{ log.protein || 0 }}g蛋白质 · {{ formatTime(log.logged_at) }}
+        <div class="swipe-delete" @click="deleteLog(log.id)">删除</div>
+        <div
+          class="log-item swipe-content"
+          :style="{ transform: `translateX(-${swipeOffset[log.id] || 0}px)` }"
+          @touchstart="onSwipeStart($event, log.id)"
+          @touchmove="onSwipeMove($event, log.id)"
+          @touchend="onSwipeEnd(log.id)"
+        >
+          <div class="log-emoji">{{ log.food_emoji || '🍽️' }}</div>
+          <div class="log-info">
+            <div class="log-name">{{ log.food_name }}</div>
+            <div class="log-meta">
+              {{ log.amount }}g · {{ log.protein || 0 }}g蛋白质 · {{ formatTime(log.logged_at) }}
+            </div>
           </div>
+          <div class="log-cal">{{ log.calories }}<span class="log-cal-unit">kcal</span></div>
+          <button class="log-delete" @click="deleteLog(log.id)">🗑️</button>
         </div>
-        <div class="log-cal">{{ log.calories }}<span class="log-cal-unit">kcal</span></div>
-        <button class="log-delete" @click="deleteLog(log.id)">🗑️</button>
       </div>
     </div>
 
@@ -265,7 +274,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import api from '../api'
 import { useAuthStore } from '../stores/auth'
 import BottomNav from '../components/BottomNav.vue'
@@ -299,6 +308,12 @@ const showCustomForm = ref(false)
 const customFood = ref({
   name: '', calories: '', protein: '', carbs: '', fat: '', category: ''
 })
+
+const swipeOffset = reactive({})
+let swipeStartX = 0
+let swipeStartOffset = 0
+const SWIPE_THRESHOLD = 60
+const SWIPE_OPEN = 80
 
 const meals = [
   { type: 0, label: '早餐', emoji: '🍳' },
@@ -547,9 +562,31 @@ async function deleteLog(id) {
   if (!confirm('确定删除这条记录？')) return
   try {
     await api.delete(`/food-logs/${id}`)
+    delete swipeOffset[id]
     await fetchDayData()
   } catch (e) {
     alert('删除失败')
+  }
+}
+
+function onSwipeStart(e, id) {
+  swipeStartX = e.touches[0].clientX
+  swipeStartOffset = swipeOffset[id] || 0
+}
+
+function onSwipeMove(e, id) {
+  const delta = swipeStartX - e.touches[0].clientX
+  let offset = swipeStartOffset + delta
+  if (offset < 0) offset = 0
+  if (offset > 120) offset = 120
+  swipeOffset[id] = offset
+}
+
+function onSwipeEnd(id) {
+  if (swipeOffset[id] > SWIPE_THRESHOLD) {
+    swipeOffset[id] = SWIPE_OPEN
+  } else {
+    swipeOffset[id] = 0
   }
 }
 
@@ -917,7 +954,38 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 8px 16px;
+  background: #fff;
+  transition: none;
+}
+
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.swipe-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 100%;
+  background: #ff3b30;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.swipe-content {
+  position: relative;
+  background: #fff;
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .log-emoji {
