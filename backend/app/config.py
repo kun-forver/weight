@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     SMTP_FROM_NAME: str = "减脂PK"
     VERIFICATION_CODE_EXPIRE_MINUTES: int = 5
 
+    # WeChat Mini Program (for one-click wx login via code2session)
+    WX_APPID: str = ""
+    WX_SECRET: str = ""
+
     @property
     def DATABASE_URL(self) -> str:
         """Build the SQLAlchemy database URL for MySQL."""

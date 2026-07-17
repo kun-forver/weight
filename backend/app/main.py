@@ -20,14 +20,16 @@ os.makedirs("uploads/avatars", exist_ok=True)
 # Serve uploaded files
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# CORS - restrict to your domain in production
+# CORS - allow both web and WeChat Mini Program requests
+# Mini programs don't send Origin headers so CORS isn't enforced for them,
+# but H5 mode and web browsers need explicit origins listed here.
 allowed_origins = os.environ.get("CORS_ORIGINS", "http://localhost:8080,http://yoyo678.cc.cd,https://yoyo678.cc.cd").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "multipart/form-data", "Accept"],
 )
 
 

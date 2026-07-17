@@ -76,8 +76,8 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    username: str
-    email: str
+    username: str | None = None
+    email: str | None = None
     nickname: str | None = None
     avatar: str | None = None
     gender: int | None = None
@@ -87,6 +87,9 @@ class UserResponse(BaseModel):
     daily_calorie_goal: int | None = None
     role: str = "user"
     created_at: datetime | None = None
+    # Computed from User model properties (has_password / wechat_bound)
+    has_password: bool = False
+    wechat_bound: bool = False
 
 
 
@@ -133,5 +136,20 @@ class ResetPasswordRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     """Schema for changing password from settings."""
     old_password: str
+    new_password: str
+
+
+class WxLoginRequest(BaseModel):
+    """Schema for one-click WeChat login (mp login code -> openid)."""
+    code: str
+
+
+class WxBindRequest(BaseModel):
+    """Schema for binding a WeChat account to the current user."""
+    code: str
+
+
+class SetPasswordRequest(BaseModel):
+    """Schema for setting a password for the first time (WeChat-only users)."""
     new_password: str
 

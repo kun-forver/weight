@@ -18,6 +18,9 @@ from app.schemas.user import (
     ForgotPasswordRequest,
     ResetPasswordRequest,
     ChangePasswordRequest,
+    WxLoginRequest,
+    WxBindRequest,
+    SetPasswordRequest,
     validate_password,
 )
 from app.services.auth import (
@@ -29,6 +32,7 @@ from app.services.auth import (
     decode_reset_token,
 )
 from app.services.email_service import send_code, verify_code, send_reset_password_email
+from app.services.wechat import code2session
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -227,6 +231,13 @@ def change_password(
     db: Session = Depends(get_db),
 ):
     """Change the user's password from their profile settings page."""
+    # WeChat-only users (no password yet) must use set-password instead;
+    # this also guards verify_password against a NULL password_hash.
+    if not current_user.has_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="当前账号未设置密码，请使用「设置密码」功能",
+        )
     # Verify old password
     if not verify_password(payload.old_password, current_user.password_hash):
         raise HTTPException(
@@ -247,3 +258,140 @@ def change_password(
     current_user.password_hash = hash_password(payload.new_password)
     db.commit()
     return {"message": "密码修改成功"}
+
+
+# ----------------------------------------------------------------------------
+# WeChat one-click login + bind/unbind + set-password
+# ----------------------------------------------------------------------------
+
+
+@router.post("/wx-login", response_model=TokenResponse)
+def wx_login(payload: WxLoginRequest, db: Session = Depends(get_db)):
+    """One-click WeChat login.
+
+    Exchange the mp login code for an openid via code2session. If a user with
+    that openid exists, log them in. Otherwise auto-create a new account with
+    openid set, nickname "微信用户", and NULL username/email/password (the
+    user can complete their profile / set a password later). Returns a JWT.
+    """
+    try:
+        data = code2session(payload.code)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    openid = data["openid"]
+
+    user = db.query(User).filter(User.openid == openid).first()
+    if not user:
+        user = User(
+            openid=openid,
+            username=None,
+            email=None,
+            password_hash=None,
+            nickname="微信用户",
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token(user.id, user.username or "")
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer",
+        user=UserResponse.model_validate(user),
+    )
+
+
+@router.post("/bind-wechat", response_model=UserResponse)
+def bind_wechat(
+    payload: WxBindRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Bind a WeChat account to the currently authenticated user.
+
+    The WeChat openid must not already be bound to another account. After
+    binding, the user can log in via either username/password or WeChat.
+    """
+    try:
+        data = code2session(payload.code)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    openid = data["openid"]
+
+    if current_user.openid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该账号已绑定微信",
+        )
+
+    existing = db.query(User).filter(User.openid == openid).first()
+    if existing and existing.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该微信已绑定其他账号",
+        )
+
+    current_user.openid = openid
+    db.commit()
+    db.refresh(current_user)
+    return UserResponse.model_validate(current_user)
+
+
+@router.post("/unbind-wechat", response_model=UserResponse)
+def unbind_wechat(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Unbind the WeChat account from the current user.
+
+    Only allowed when the user has a password set, otherwise they would lose
+    all ways to log in. WeChat-only users must set a password first.
+    """
+    if not current_user.openid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该账号未绑定微信",
+        )
+    if not current_user.has_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="请先设置密码再解绑微信，否则将无法登录",
+        )
+    current_user.openid = None
+    db.commit()
+    db.refresh(current_user)
+    return UserResponse.model_validate(current_user)
+
+
+@router.post("/set-password", status_code=status.HTTP_200_OK)
+def set_password(
+    payload: SetPasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Set a password for a user who doesn't have one yet (e.g. WeChat-only).
+
+    Use change-password instead once a password is already set. This enables
+    WeChat-created users to later unbind WeChat while keeping access.
+    """
+    if current_user.has_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="已有密码，请使用修改密码功能",
+        )
+    try:
+        validate_password(payload.new_password)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    current_user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "密码设置成功"}

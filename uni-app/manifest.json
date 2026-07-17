@@ -1,0 +1,32 @@
+{
+  "name": "减脂PK",
+  "appid": "wx048b360c2018c047",
+  "description": "减脂PK - 减脂追踪与好友PK对战",
+  "version": "1.0.0",
+  "vueVersion": "3",
+  "mp-weixin": {
+    "appid": "wx048b360c2018c047",
+    "setting": {
+      "urlCheck": true,
+      "es6": true,
+      "postcss": true,
+      "minified": true,
+      "newFeature": true
+    },
+    "usingComponents": true,
+    "permission": {},
+    "requiredBackgroundModes": [],
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "h5": {
+    "title": "减脂PK",
+    "router": { "mode": "hash", "base": "./" },
+    "devServer": {
+      "port": 8080,
+      "proxy": {
+        "/api": { "target": "http://localhost:8000", "changeOrigin": true },
+        "/uploads": { "target": "http://localhost:8000", "changeOrigin": true }
+      }
+    }
+  }
+}

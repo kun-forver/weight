@@ -27,6 +27,30 @@ def init_db():
     except Exception as e:
         print(f"Error during schema update (users.role): {e}")
 
+    # 1b. WeChat login migration: add openid column + relax NOT NULL on
+    # username/email/password_hash so WeChat-only users can be created
+    # with NULL values. MySQL allows multiple NULLs under UNIQUE, so this
+    # does not conflict with existing accounts that carry real values.
+    try:
+        inspector = inspect(engine)
+        if "users" in inspector.get_table_names():
+            columns = [col["name"] for col in inspector.get_columns("users")]
+            if "openid" not in columns:
+                print("Adding 'openid' column to 'users' table...")
+                with engine.begin() as conn:
+                    conn.execute(text(
+                        "ALTER TABLE users ADD COLUMN openid VARCHAR(64) NULL UNIQUE"
+                    ))
+                print("'openid' column added successfully.")
+            # Relax NOT NULL on username/email/password_hash (idempotent)
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE users MODIFY username VARCHAR(50) NULL"))
+                conn.execute(text("ALTER TABLE users MODIFY email VARCHAR(100) NULL"))
+                conn.execute(text("ALTER TABLE users MODIFY password_hash VARCHAR(255) NULL"))
+            print("Relaxed NOT NULL on username/email/password_hash for WeChat login.")
+    except Exception as e:
+        print(f"Error during WeChat schema migration: {e}")
+
     # 2. Seeding food data
     print("Seeding food data...")
     seed_foods()
