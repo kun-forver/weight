@@ -138,7 +138,7 @@
           class="log-item swipe-content"
           :style="{ transform: `translateX(-${swipeOffset[log.id] || 0}px)` }"
           @touchstart="onSwipeStart($event, log.id)"
-          @touchmove="onSwipeMove($event, log.id)"
+          @catchtouchmove="onSwipeMove($event, log.id)"
           @touchend="onSwipeEnd(log.id)"
         >
           <text class="log-emoji">{{ log.food_emoji || '🍽️' }}</text>
@@ -998,6 +998,7 @@ onShow(() => {
   justify-content: center;
   font-size: 28rpx;
   font-weight: 600;
+  z-index: 1;
 }
 
 .swipe-content {
@@ -1005,6 +1006,7 @@ onShow(() => {
   background: #fff;
   transition: transform 0.3s ease;
   will-change: transform;
+  z-index: 2;
 }
 
 .log-emoji {
