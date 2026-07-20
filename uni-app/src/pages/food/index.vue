@@ -150,6 +150,7 @@
             <text class="log-cal">{{ log.calories }}</text>
             <text class="log-cal-unit">kcal</text>
           </view>
+          <view class="log-delete-btn" @tap.stop="deleteLog(log.id)">×</view>
         </view>
       </view>
     </view>
@@ -1045,6 +1046,21 @@ onShow(() => {
 .log-cal-unit {
   font-size: 22rpx;
   color: #aeaeb2;
+}
+
+.log-delete-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #f0f0f2;
+  color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  margin-left: 16rpx;
+  flex-shrink: 0;
 }
 
 .bottom-sheet-backdrop {

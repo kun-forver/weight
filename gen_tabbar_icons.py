@@ -1,74 +1,69 @@
-"""Generate simple tabBar icons for the WeChat mini-program.
+"""Generate emoji-style tabBar icons for the WeChat mini-program.
 
-Produces 10 PNGs in src/static/tabbar/:
-  home / home-active
-  food / food-active
-  weight / weight-active
-  pk / pk-active
-  profile / profile-active
+Uses Windows' built-in emoji font (seguiemj.ttf) + Pillow's embedded_color
+support to render real color emoji. WeChat tabBar needs separate PNG files
+for iconPath and selectedIconPath; for emoji style we use the same colorful
+PNG for both states and let `tabBar.color`/`selectedColor` tint the label
+text (mirroring how the old Vue BottomNav worked: emoji always colored,
+label changes color).
 
-Style: flat circle with a single emoji-like glyph drawn via Pillow's
-default bitmap font (no system font dependency).  Color theme matches
-the app: inactive #86868b, active #007aff.
+Output: uni-app/src/static/tabbar/{home,food,weight,pk,profile}.png
+        (5 files; each used for both iconPath and selectedIconPath)
 """
 
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).resolve().parent / "uni-app" / "src" / "static" / "tabbar"
 OUT.mkdir(parents=True, exist_ok=True)
 
-SIZE = 81  # recommended icon size for WeChat tabBar
-INACTIVE = (134, 134, 139, 255)   # #86868b
-ACTIVE = (0, 122, 255, 255)       # #007aff
+FONT_PATH = "C:/Windows/Fonts/seguiemj.ttf"
+# Render on a large canvas, then crop to content + resize to target.
+LARGE = 300
+FINAL = 81  # WeChat recommended tabBar icon size
+# Padding ratio so the emoji is not edge-to-edge.
+PADDING = 0.10
 
-# Each entry: (filename-stem, glyph-draw-lambda(draw, size, color))
-# Glyphs are simple geometric icons so we don't depend on font files.
-def draw_home(draw, s, c):
-    # house: triangle roof + square body
-    pts_roof = [(s // 2, 8), (8, s // 2), (s - 8, s // 2)]
-    draw.polygon(pts_roof, fill=c)
-    draw.rectangle([20, s // 2, s - 20, s - 10], fill=c)
-
-def draw_food(draw, s, c):
-    # fork & spoon approximation: two thin rectangles + circle
-    draw.rectangle([20, 12, 28, s - 12], fill=c)   # fork stem
-    draw.rectangle([16, 12, 32, 28], fill=c)        # fork head
-    draw.ellipse([s - 32, 12, s - 16, 32], fill=c)  # spoon head
-    draw.rectangle([s - 28, 28, s - 20, s - 12], fill=c)
-
-def draw_weight(draw, s, c):
-    # scale: rectangle base + circle dial
-    draw.rectangle([10, s - 20, s - 10, s - 8], fill=c)
-    draw.ellipse([18, 12, s - 18, s - 22], outline=c, width=4)
-    draw.line([(s // 2, s // 2 - 4), (s // 2 + 10, s // 2 + 4)], fill=c, width=3)
-
-def draw_pk(draw, s, c):
-    # crossed swords -> two diagonal bars
-    draw.line([(10, 10), (s - 10, s - 10)], fill=c, width=6)
-    draw.line([(s - 10, 10), (10, s - 10)], fill=c, width=6)
-    draw.ellipse([s // 2 - 8, s // 2 - 8, s // 2 + 8, s // 2 + 8], fill=c)
-
-def draw_profile(draw, s, c):
-    # head + shoulders silhouette
-    draw.ellipse([s // 2 - 12, 12, s // 2 + 12, 36], fill=c)
-    draw.pieslice([16, 30, s - 16, s + 16], 180, 360, fill=c)
-
-GLYPHS = [
-    ("home", draw_home),
-    ("food", draw_food),
-    ("weight", draw_weight),
-    ("pk", draw_pk),
-    ("profile", draw_profile),
+ICONS = [
+    ("home", "\U0001F3E0"),     # home
+    ("food", "\U0001F34E"),    # apple
+    ("weight", "\U0001F4C9"),  # chart decreasing (fat-loss trend)
+    ("pk", "\U0001F3C6"),      # trophy
+    ("profile", "\U0001F464"),  # bust in silhouette
 ]
 
-for name, drawer in GLYPHS:
-    for suffix, color in (("", INACTIVE), ("-active", ACTIVE)):
-        img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-        d = ImageDraw.Draw(img)
-        drawer(d, SIZE, color)
-        out_path = OUT / f"{name}{suffix}.png"
-        img.save(out_path, "PNG")
-        print(f"  wrote {out_path.name}")
+font = ImageFont.truetype(FONT_PATH, LARGE)
+
+for name, ch in ICONS:
+    # 1. Render on large transparent canvas
+    big = Image.new("RGBA", (LARGE, LARGE), (0, 0, 0, 0))
+    d = ImageDraw.Draw(big)
+    bbox = d.textbbox((0, 0), ch, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
+    x = (LARGE - w) / 2 - bbox[0]
+    y = (LARGE - h) / 2 - bbox[1]
+    d.text((x, y), ch, font=font, embedded_color=True)
+
+    # 2. Crop to non-transparent content
+    cropped = big.crop(big.getbbox(alpha_only=True) or big.getbbox())
+
+    # 3. Scale to fit FINAL with padding (preserve aspect ratio)
+    cw, ch_ = cropped.size
+    avail = int(FINAL * (1 - 2 * PADDING))
+    scale = min(avail / cw, avail / ch_)
+    new_w = max(1, int(cw * scale))
+    new_h = max(1, int(ch_ * scale))
+    scaled = cropped.resize((new_w, new_h), Image.LANCZOS)
+
+    # 4. Center on FINAL canvas
+    out_img = Image.new("RGBA", (FINAL, FINAL), (0, 0, 0, 0))
+    ox = (FINAL - new_w) // 2
+    oy = (FINAL - new_h) // 2
+    out_img.alpha_composite(scaled, (ox, oy))
+
+    out = OUT / f"{name}.png"
+    out_img.save(out, "PNG")
+    print(f"  wrote {out.name} (content {cw}x{ch_} -> {new_w}x{new_h}, offset {ox},{oy})")
 
 print("done")
