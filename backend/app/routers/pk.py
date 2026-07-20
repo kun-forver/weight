@@ -131,6 +131,8 @@ def create_pk(
         raise HTTPException(status_code=404, detail="Opponent user not found")
     if payload.user_b == current_user.id:
         raise HTTPException(status_code=400, detail="Cannot PK with yourself")
+    if opponent.role == "admin":
+        raise HTTPException(status_code=400, detail="不能向管理员账号发起对战")
 
     if payload.end_date <= date.today():
         raise HTTPException(status_code=400, detail="End date must be in the future")

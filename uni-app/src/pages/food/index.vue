@@ -250,7 +250,7 @@
               placeholder-class="ph-class"
             />
             <text class="amount-unit">g</text>
-            <view class="amount-btn" @tap="adjustAmount(50)">+</text>
+            <view class="amount-btn" @tap="adjustAmount(50)">+</view>
           </view>
           <text class="calorie-preview">预计摄入 ≈ {{ Math.round(calcCalories) }} kcal</text>
         </view>

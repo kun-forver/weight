@@ -82,6 +82,8 @@ def send_friend_request(
     friend = db.query(User).filter(User.id == f_id).first()
     if not friend:
         raise HTTPException(status_code=404, detail="该用户不存在")
+    if friend.role == "admin":
+        raise HTTPException(status_code=400, detail="不能添加管理员为好友")
 
     # Check if a friendship record already exists in either direction
     existing = (
@@ -158,11 +160,12 @@ def search_friends(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Search for users by username or nickname."""
+    """Search for users by username or nickname (admins are hidden from search)."""
     users = (
         db.query(User)
         .filter(
             User.id != current_user.id,
+            User.role != "admin",
             (User.username.like(f"%{q}%")) | (User.nickname.like(f"%{q}%")),
         )
         .limit(20)

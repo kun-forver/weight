@@ -85,7 +85,8 @@
 
       <!-- Action Buttons -->
       <view class="battle-actions" v-if="activeBattle.status === 'pending'">
-        <button class="action-btn accept-btn" @tap="acceptBattle(activeBattle.id)">接受对战</button>
+        <button v-if="isOpponent" class="action-btn accept-btn" @tap="acceptBattle(activeBattle.id)">接受对战</button>
+        <view v-else class="action-btn waiting-btn">⏳ 等待对方接受...</view>
       </view>
       <view class="battle-actions" v-else-if="activeBattle.status === 'active'">
         <button class="action-btn checkin-btn" @tap="checkIn">每日打卡</button>
@@ -226,6 +227,10 @@
 import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
+const currentUserId = computed(() => authStore.user?.id)
 
 const loading = ref(true)
 const activeBattle = ref(null)
@@ -236,6 +241,12 @@ const showCreateSheet = ref(false)
 const creating = ref(false)
 const friendSearchQuery = ref('')
 const searchResults = ref([])
+
+// 当前用户是否为对战的被挑战方（user_b）
+const isOpponent = computed(() => {
+  if (!activeBattle.value || !currentUserId.value) return false
+  return activeBattle.value.user_b?.id === currentUserId.value
+})
 
 const today = new Date().toISOString().split('T')[0]
 const defaultEnd = (() => {
@@ -710,6 +721,15 @@ onShow(async () => {
 .accept-btn {
   background: #34c759;
   color: #fff;
+}
+
+.waiting-btn {
+  background: #f5f5f7;
+  color: #86868b;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 88rpx;
 }
 
 .checkin-btn {
