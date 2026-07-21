@@ -7,23 +7,36 @@ const path = require('path')
 const { Resvg } = require(path.join(process.env.WORKSPACE_NODE_MODULES || 'C:/Users/坤先生的信/.qoderworkcn/workspace/mrkacwb66o1ze5tt/node_modules', '@resvg/resvg-js'))
 const { PNG } = require(path.join(process.env.WORKSPACE_NODE_MODULES || 'C:/Users/坤先生的信/.qoderworkcn/workspace/mrkacwb66o1ze5tt/node_modules', 'pngjs'))
 
-const ICONS_DIR = 'C:/Users/坤先生~1/AppData/Local/Temp/ant-icons/package/inline-svg/outlined'
+const ANT_DIR = 'C:/Users/坤先生的信/AppData/Local/Temp/ant-icons/package/inline-svg/outlined'
+const WS = 'C:/Users/坤先生的信/.qoderworkcn/workspace/mrkacwb66o1ze5tt'
 const OUT_DIR = 'F:/weight/uni-app/src/static/tabbar'
 const SIZE = 81        // final canvas (WeChat recommended)
 const CONTENT_PX = 57  // icon content size -> ~12px padding each side
 
+// [out-name, svg-path, gray, blue]
+// weight/pk use Lucide stroke icons to match dashboard top shortcuts (scale / swords)
 const ICONS = [
-  ['home', 'home.svg', '#86868b', '#007aff'],
-  ['food', 'apple.svg', '#86868b', '#007aff'],
-  ['weight', 'line-chart.svg', '#86868b', '#007aff'],
-  ['pk', 'trophy.svg', '#86868b', '#007aff'],
-  ['profile', 'user.svg', '#86868b', '#007aff'],
+  ['home', path.join(ANT_DIR, 'home.svg'), '#86868b', '#007aff'],
+  ['food', path.join(ANT_DIR, 'apple.svg'), '#86868b', '#007aff'],
+  ['weight', path.join(WS, 'scale.svg'), '#86868b', '#007aff'],
+  ['pk', path.join(WS, 'swords.svg'), '#86868b', '#007aff'],
+  ['profile', path.join(ANT_DIR, 'user.svg'), '#86868b', '#007aff'],
 ]
 
-function prepareSvg(svgFile, color) {
-  let svg = fs.readFileSync(path.join(ICONS_DIR, svgFile), 'utf-8')
-  // resvg needs xmlns + we inject fill color on the <svg> element
-  return svg.replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" fill="${color}" `)
+function prepareSvg(svgPath, color) {
+  let svg = fs.readFileSync(svgPath, 'utf-8')
+  // resvg requires xmlns
+  if (!svg.includes('xmlns=')) {
+    svg = svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ')
+  }
+  if (svg.includes('currentColor')) {
+    // Stroke-based icons (Lucide): recolor via currentColor replacement
+    svg = svg.split('currentColor').join(color)
+  } else {
+    // Fill-based icons (Ant Design): inject fill on the <svg> element
+    svg = svg.replace('<svg ', `<svg fill="${color}" `)
+  }
+  return svg
 }
 
 function renderRaw(svg, width) {

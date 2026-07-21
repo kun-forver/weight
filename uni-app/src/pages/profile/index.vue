@@ -3,11 +3,11 @@
     <!-- Blue Gradient Header -->
     <view class="profile-header">
       <view class="header-top">
-        <view class="avatar-large" @tap="chooseAvatar">
+        <button class="avatar-large" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
           <text class="avatar-text-fallback">{{ userInitial }}</text>
           <image v-if="avatarUrl" :src="avatarUrl" class="avatar-img" mode="aspectFill" />
           <view class="avatar-edit-hint"><text>📷</text></view>
-        </view>
+        </button>
         <view class="user-info">
           <text class="user-name">{{ userNickname }}</text>
           <view class="user-tags">
@@ -476,33 +476,24 @@ function onDarkModeChange(e) {
   settings.darkMode = e.detail.value
 }
 
-function chooseAvatar() {
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: async (res) => {
-      const tempFilePath = res.tempFilePaths[0]
-      // Check file size
-      const fileSize = res.size?.[0] || 0
-      if (fileSize > 10 * 1024 * 1024) {
-        uni.showToast({ title: '图片大小不能超过10MB', icon: 'none' })
-        return
-      }
-      uni.showLoading({ title: '上传中...' })
-      try {
-        const uploadRes = await api.upload('/auth/avatar', tempFilePath, 'file')
-        authStore.user = uploadRes.data
-        uni.setStorageSync('user', JSON.stringify(uploadRes.data))
-        uni.showToast({ title: '头像更新成功', icon: 'success' })
-      } catch (e) {
-        const detail = e?.data?.detail || e?.response?.data?.detail
-        uni.showToast({ title: '头像上传失败: ' + (typeof detail === 'string' ? detail : ''), icon: 'none' })
-      } finally {
-        uni.hideLoading()
-      }
-    }
-  })
+function onChooseAvatar(e) {
+  const tempFilePath = e?.detail?.avatarUrl
+  if (!tempFilePath) return
+  uni.showLoading({ title: '上传中...' })
+  api.upload('/auth/avatar', tempFilePath, 'file')
+    .then((uploadRes) => {
+      authStore.user = uploadRes.data
+      uni.setStorageSync('user', JSON.stringify(uploadRes.data))
+      uni.showToast({ title: '头像更新成功', icon: 'success' })
+    })
+    .catch((e2) => {
+      const detail = e2?.data?.detail || e2?.response?.data?.detail
+      console.error('[avatar upload failed]', e2)
+      uni.showToast({ title: '头像上传失败: ' + (typeof detail === 'string' ? detail : ''), icon: 'none', duration: 3000 })
+    })
+    .finally(() => {
+      uni.hideLoading()
+    })
 }
 
 function friendStatusClass(status) {
@@ -785,6 +776,14 @@ onShow(async () => {
   justify-content: center;
   position: relative;
   flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+  overflow: hidden;
+}
+
+.avatar-large::after {
+  border: none;
 }
 
 .avatar-img {
