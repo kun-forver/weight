@@ -3,7 +3,10 @@
     <!-- Header -->
     <view class="dash-header">
       <view class="header-left">
-        <view class="avatar">{{ userInitial }}</view>
+        <view class="avatar">
+          <text v-if="!avatarUrl" class="avatar-text">{{ userInitial }}</text>
+          <image v-if="avatarUrl" :src="avatarUrl" class="avatar-img" mode="aspectFill" />
+        </view>
         <view class="greeting">
           <text class="hello">{{ greeting }}，{{ userNickname }}</text>
           <text class="date-text">{{ formattedDate }}</text>
@@ -208,6 +211,14 @@ const userInitial = computed(() => {
   return name.charAt(0).toUpperCase()
 })
 
+const BASE_URL = 'https://yoyo678.cc.cd'
+const avatarUrl = computed(() => {
+  const av = user.value?.avatar
+  if (!av) return ''
+  if (av.startsWith('http') || av.startsWith('wxfile://') || av.startsWith('tmp')) return av
+  return BASE_URL + av
+})
+
 const greeting = computed(() => {
   const h = new Date().getHours()
   if (h < 6) return '夜深了'
@@ -366,8 +377,19 @@ onShow(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.avatar-text {
   font-size: 36rpx;
   font-weight: 600;
+  color: #fff;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .greeting {
