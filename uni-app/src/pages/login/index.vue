@@ -52,6 +52,43 @@
         <text class="link" @tap="goRegister">立即注册</text>
       </view>
     </view>
+
+    <!-- Profile completion sheet (shown after first wx login) -->
+    <view v-if="showProfileSheet" class="sheet-backdrop" @tap="skipProfileSheet"></view>
+    <view v-if="showProfileSheet" class="profile-sheet">
+      <view class="sheet-header">
+        <text class="sheet-title">完善资料</text>
+        <view class="sheet-close" @tap="skipProfileSheet">✕</view>
+      </view>
+      <text class="sheet-hint">设置你的昵称和头像，朋友才能认出你</text>
+
+      <view class="avatar-row">
+        <button class="avatar-chooser" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+          <image v-if="avatarTempPath" :src="avatarTempPath" class="avatar-img" mode="aspectFill" />
+          <view v-else class="avatar-placeholder"><text class="cam-icon">📷</text></view>
+        </button>
+        <text class="avatar-tip">点击获取微信头像</text>
+      </view>
+
+      <view class="nickname-row">
+        <text class="input-icon">👤</text>
+        <input
+          v-model="tempNickname"
+          type="nickname"
+          placeholder="点击获取微信昵称"
+          class="nickname-input"
+          placeholder-class="ph-class"
+          @input="onNicknameInput"
+          @blur="onNicknameBlur"
+          @change="onNicknameChange"
+        />
+      </view>
+
+      <button class="btn-primary" :disabled="profileSaving" @tap="saveProfile">
+        {{ profileSaving ? '保存中...' : '保存并进入' }}
+      </button>
+      <text class="skip-link" @tap="skipProfileSheet">稍后再说</text>
+    </view>
   </view>
 </template>
 
@@ -111,7 +148,13 @@ async function handleWxLogin() {
       return
     }
     const res = await authStore.wxLogin(code)
-    if (res.user?.role === 'admin') {
+    // If new user with default nickname, prompt to complete profile
+    const u = res.user
+    if (!u || u.nickname === '微信用户' || !u.nickname) {
+      showProfileSheet.value = true
+      return
+    }
+    if (u.role === 'admin') {
       uni.reLaunch({ url: '/pages/dashboard/index' })
     } else {
       uni.switchTab({ url: '/pages/dashboard/index' })
@@ -127,6 +170,84 @@ async function handleWxLogin() {
     }
   } finally {
     wxLoading.value = false
+  }
+}
+
+// --- Profile completion sheet ---
+const showProfileSheet = ref(false)
+const avatarTempPath = ref('')
+const tempNickname = ref('')
+const profileSaving = ref(false)
+
+function onChooseAvatar(e) {
+  // WeChat returns a temp file path in e.detail.avatarUrl
+  if (e?.detail?.avatarUrl) {
+    avatarTempPath.value = e.detail.avatarUrl
+  }
+}
+
+function onNicknameInput(e) {
+  if (e?.detail?.value) {
+    tempNickname.value = e.detail.value
+  }
+}
+
+function onNicknameBlur(e) {
+  if (e?.detail?.value) {
+    tempNickname.value = e.detail.value
+  }
+}
+
+function onNicknameChange(e) {
+  if (e?.detail?.value) {
+    tempNickname.value = e.detail.value
+  }
+}
+
+async function saveProfile() {
+  if (!avatarTempPath.value && !tempNickname.value.trim()) {
+    uni.showToast({ title: '请至少设置头像或昵称', icon: 'none' })
+    return
+  }
+  profileSaving.value = true
+  try {
+    // 1. Upload avatar if chosen
+    if (avatarTempPath.value) {
+      try {
+        await authStore.uploadAvatar(avatarTempPath.value)
+      } catch (e) {
+        const detail = e?.response?.data?.detail
+        const reason = (typeof detail === 'string' && detail) || e?.message || ''
+        console.error('[avatar upload failed]', e)
+        uni.showToast({ title: reason ? `头像上传失败: ${reason}` : '头像上传失败', icon: 'none', duration: 3000 })
+      }
+    }
+    // 2. Update nickname if provided
+    if (tempNickname.value && tempNickname.value.trim()) {
+      try {
+        await authStore.updateProfile({ nickname: tempNickname.value.trim() })
+      } catch (e) {
+        uni.showToast({ title: '昵称保存失败', icon: 'none' })
+      }
+    }
+    showProfileSheet.value = false
+    // Navigate to dashboard
+    if (authStore.user?.role === 'admin') {
+      uni.reLaunch({ url: '/pages/dashboard/index' })
+    } else {
+      uni.switchTab({ url: '/pages/dashboard/index' })
+    }
+  } finally {
+    profileSaving.value = false
+  }
+}
+
+function skipProfileSheet() {
+  showProfileSheet.value = false
+  if (authStore.user?.role === 'admin') {
+    uni.reLaunch({ url: '/pages/dashboard/index' })
+  } else {
+    uni.switchTab({ url: '/pages/dashboard/index' })
   }
 }
 
@@ -317,4 +438,146 @@ function goRegister() {
   color: #007aff;
   font-weight: 600;
 }
+
+/* Bottom Sheet / Modal for Profile Completion */
+.sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  backdrop-filter: blur(4px);
+}
+
+.profile-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 48rpx 40rpx 60rpx;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 -10rpx 40rpx rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.sheet-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #1d1d1f;
+}
+
+.sheet-close {
+  font-size: 36rpx;
+  color: #86868b;
+  padding: 8rpx 16rpx;
+}
+
+.sheet-hint {
+  font-size: 26rpx;
+  color: #86868b;
+  margin-bottom: 40rpx;
+  align-self: flex-start;
+}
+
+.avatar-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.avatar-chooser {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  background: #f0f0f2;
+  border: 4rpx solid #e5e5ea;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.avatar-chooser::after {
+  border: none;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef4ff;
+}
+
+.cam-icon {
+  font-size: 64rpx;
+}
+
+.avatar-tip {
+  font-size: 24rpx;
+  color: #007aff;
+  margin-top: 16rpx;
+  font-weight: 500;
+}
+
+.nickname-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #f5f5f7;
+  border-radius: 28rpx;
+  padding: 0 28rpx;
+  margin-bottom: 36rpx;
+  height: 100rpx;
+}
+
+.nickname-input {
+  flex: 1;
+  height: 100rpx;
+  font-size: 32rpx;
+  color: #1d1d1f;
+}
+
+.skip-link {
+  font-size: 28rpx;
+  color: #86868b;
+  margin-top: 28rpx;
+  padding: 12rpx 24rpx;
+}
 </style>
+

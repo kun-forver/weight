@@ -4,8 +4,8 @@
     <view class="profile-header">
       <view class="header-top">
         <view class="avatar-large" @tap="chooseAvatar">
-          <image v-if="user.avatar" :src="user.avatar" class="avatar-img" mode="aspectFill" />
-          <text v-else class="avatar-text">{{ userInitial }}</text>
+          <text class="avatar-text-fallback">{{ userInitial }}</text>
+          <image v-if="avatarUrl" :src="avatarUrl" class="avatar-img" mode="aspectFill" />
           <view class="avatar-edit-hint"><text>📷</text></view>
         </view>
         <view class="user-info">
@@ -198,7 +198,15 @@
         <view class="edit-form">
           <view class="form-group">
             <text class="form-label">昵称</text>
-            <input v-model="editForm.nickname" placeholder="请输入昵称" class="form-input" placeholder-class="ph-class" />
+            <input
+              v-model="editForm.nickname"
+              type="nickname"
+              placeholder="请输入或点击选择微信昵称"
+              class="form-input"
+              placeholder-class="ph-class"
+              @input="onEditNicknameInput"
+              @blur="onEditNicknameBlur"
+            />
           </view>
           <view class="form-row">
             <view class="form-group">
@@ -355,10 +363,20 @@ const genderOptions = [
   { label: '女', value: 0 },
 ]
 
+const BASE_URL = 'https://yoyo678.cc.cd'
+
 const userNickname = computed(() => user.value?.nickname || user.value?.username || '用户')
 const userInitial = computed(() => {
   const name = user.value?.nickname || user.value?.username || 'U'
   return name.charAt(0).toUpperCase()
+})
+
+// Resolve avatar URL: relative paths from backend need server prefix
+const avatarUrl = computed(() => {
+  const av = user.value?.avatar
+  if (!av) return ''
+  if (av.startsWith('http') || av.startsWith('wxfile://') || av.startsWith('tmp')) return av
+  return BASE_URL + av
 })
 
 const genderText = computed(() => {
@@ -431,6 +449,18 @@ const remainingWeight = computed(() => {
 function getInitial(name) {
   if (!name) return '?'
   return name.charAt(0).toUpperCase()
+}
+
+function onEditNicknameInput(e) {
+  if (e?.detail?.value) {
+    editForm.value.nickname = e.detail.value
+  }
+}
+
+function onEditNicknameBlur(e) {
+  if (e?.detail?.value) {
+    editForm.value.nickname = e.detail.value
+  }
 }
 
 function onGenderChange(e) {
@@ -745,31 +775,32 @@ onShow(async () => {
 }
 
 .avatar-large {
-  width: 128rpx;
-  height: 128rpx;
+  width: 130rpx;
+  height: 130rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.25);
-  border: 5rpx solid rgba(255, 255, 255, 0.6);
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 56rpx;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
   position: relative;
-  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .avatar-img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
 }
 
-.avatar-text {
+.avatar-text-fallback {
+  position: absolute;
   font-size: 56rpx;
   font-weight: 700;
   color: #fff;
+  z-index: 1;
 }
 
 .avatar-edit-hint {
