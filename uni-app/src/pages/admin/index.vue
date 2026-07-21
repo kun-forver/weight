@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Header -->
     <view class="page-header">
       <text class="page-title">管理中心</text>
@@ -125,8 +125,10 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 
 const authStore = useAuthStore()
+const { isDark, initDark } = useDarkMode()
 const users = ref([])
 const loading = ref(true)
 
@@ -191,6 +193,7 @@ function closeDetailSheet() {
 
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
 })
 
 onLoad(async () => {
@@ -484,5 +487,84 @@ onLoad(async () => {
   padding: 80rpx;
   color: #86868b;
   font-size: 28rpx;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .page-header {
+  background: #1a1a1a;
+}
+.dark-mode .page-title {
+  color: #f5f5f7;
+}
+.dark-mode .stat-card {
+  background: #2c2c2e;
+}
+.dark-mode .stat-value {
+  color: #f5f5f7;
+}
+.dark-mode .stat-label {
+  color: #98989d;
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .user-list {
+  background: #2c2c2e;
+}
+.dark-mode .user-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .user-name {
+  color: #f5f5f7;
+}
+.dark-mode .user-meta {
+  color: #98989d;
+}
+.dark-mode .admin-tag {
+  background: #3a2a00;
+  color: #ff9f0a;
+}
+.dark-mode .bottom-sheet {
+  background: #2c2c2e;
+}
+.dark-mode .sheet-title {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-close {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .detail-label {
+  color: #f5f5f7;
+}
+.dark-mode .detail-item {
+  background: #38383a;
+}
+.dark-mode .di-label {
+  color: #98989d;
+}
+.dark-mode .di-value {
+  color: #f5f5f7;
+}
+.dark-mode .weight-list {
+  background: #38383a;
+}
+.dark-mode .weight-row {
+  border-bottom-color: #48484a;
+}
+.dark-mode .wr-date {
+  color: #98989d;
+}
+.dark-mode .wr-value {
+  color: #f5f5f7;
+}
+.dark-mode .wr-note {
+  color: #636366;
+}
+.dark-mode .loading-state {
+  color: #98989d;
 }
 </style>

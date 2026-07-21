@@ -8,9 +8,20 @@ export default {
     if (!token) {
       uni.reLaunch({ url: '/pages/login/index' })
     }
+    // Apply dark mode if saved
+    const darkMode = uni.getStorageSync('dark_mode')
+    if (darkMode) {
+      this.applyDarkMode(true)
+    }
   },
   onShow() {},
-  onHide() {}
+  onHide() {},
+  methods: {
+    applyDarkMode(isDark) {
+      // Store for pages to read
+      uni.setStorageSync('dark_mode', isDark)
+    }
+  }
 }
 </script>
 
@@ -27,16 +38,21 @@ view, text, button, input, textarea, scroll-view {
   box-sizing: border-box;
 }
 
-/* CSS Variables */
+/* CSS Variables - Light Mode */
 page {
   --primary: #007aff;
   --green: #34c759;
   --orange: #ff9500;
   --red: #ff3b30;
   --bg-color: #f5f5f7;
+  --card-bg: #ffffff;
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
-  --border-color: #e5e5ea;
+  --text-tertiary: #aeaeb2;
+  --border-color: #f0f0f2;
+  --header-bg: #ffffff;
+  --sheet-bg: #ffffff;
+  --input-bg: #f5f5f7;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -45,12 +61,12 @@ page {
 /* Shared utility classes */
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: 80px;
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16px;
   margin: 0 16px 8px;
   overflow: hidden;
@@ -60,13 +76,13 @@ page {
   font-size: 16px;
   font-weight: 600;
   margin: 16px 16px 8px;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .btn-primary {
   width: 100%;
   height: 50px;
-  background: #007aff;
+  background: var(--primary);
   color: #fff;
   border-radius: 14px;
   font-size: 17px;
@@ -88,7 +104,7 @@ page {
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 14px;
 }
 
@@ -104,7 +120,7 @@ page {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--sheet-bg);
   border-radius: 20px 20px 0 0;
   padding: 20px;
   z-index: 201;

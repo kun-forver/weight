@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Header -->
     <view class="dash-header">
       <view class="header-left">
@@ -192,10 +192,12 @@ import { ref, computed } from 'vue'
 import { onShow, onLoad } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 import CustomTabbar from '../../components/custom-tabbar/index.vue'
 import CalorieRing from '../../components/CalorieRing.vue'
 
 const authStore = useAuthStore()
+const { isDark, initDark } = useDarkMode()
 
 const loading = ref(true)
 const data = ref(null)
@@ -337,6 +339,7 @@ onLoad(async () => {
 
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
   if (authStore.user && !loading.value) {
     await fetchDashboard()
   }
@@ -789,5 +792,107 @@ onShow(async () => {
   font-size: 36rpx;
   color: #aeaeb2;
   font-family: monospace;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .dash-header {
+  background: #1a1a1a;
+  border-bottom-color: #38383a;
+}
+.dark-mode .avatar {
+  background: linear-gradient(135deg, #0a84ff, #64d2ff);
+}
+.dark-mode .hello {
+  color: #f5f5f7;
+}
+.dark-mode .date-text {
+  color: #98989d;
+}
+.dark-mode .calorie-section {
+  background: #2c2c2e;
+}
+.dark-mode .greeting {
+  color: #f5f5f7;
+}
+.dark-mode .stat-card {
+  background: #2c2c2e;
+}
+.dark-mode .sc-label {
+  color: #98989d;
+}
+.dark-mode .sc-value {
+  color: #f5f5f7;
+}
+.dark-mode .sc-unit {
+  color: #98989d;
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .shortcut-card {
+  background: #2c2c2e;
+}
+.dark-mode .sc-icon {
+  background: #38383a;
+}
+.dark-mode .sc-name {
+  color: #f5f5f7;
+}
+.dark-mode .quick-section .card {
+  background: #2c2c2e;
+}
+.dark-mode .log-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .log-name {
+  color: #f5f5f7;
+}
+.dark-mode .log-meta {
+  color: #98989d;
+}
+.dark-mode .weight-card {
+  background: #2c2c2e;
+}
+.dark-mode .wc-label {
+  color: #98989d;
+}
+.dark-mode .wc-value {
+  color: #f5f5f7;
+}
+.dark-mode .wc-unit {
+  color: #98989d;
+}
+.dark-mode .wc-change {
+  color: #98989d;
+}
+.dark-mode .pk-card {
+  background: #2c2c2e;
+}
+.dark-mode .pk-name {
+  color: #f5f5f7;
+}
+.dark-mode .pk-meta {
+  color: #98989d;
+}
+.dark-mode .pk-vs {
+  color: #636366;
+}
+.dark-mode .pk-score {
+  color: #f5f5f7;
+}
+.dark-mode .src-label {
+  color: #98989d;
+}
+.dark-mode .src-value {
+  color: #f5f5f7;
+}
+.dark-mode .src-change {
+  color: #98989d;
+}
+.dark-mode .src-arrow {
+  color: #636366;
 }
 </style>

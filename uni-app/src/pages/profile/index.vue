@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Blue Gradient Header -->
     <view class="profile-header">
       <view class="header-top">
@@ -327,9 +327,11 @@ import { ref, computed, reactive } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
+const { isDark, toggleDark, initDark } = useDarkMode()
 
 const user = computed(() => authStore.user || {})
 const latestWeight = ref(null)
@@ -480,6 +482,7 @@ function onNotificationChange(e) {
 
 function onDarkModeChange(e) {
   settings.darkMode = e.detail.value
+  toggleDark(e.detail.value)
 }
 
 function onChooseAvatar(e) {
@@ -748,6 +751,8 @@ onLoad(async () => {
 
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
+  settings.darkMode = isDark.value
   if (authStore.user) {
     await Promise.all([fetchFriends(), fetchLatestWeight()])
   }
@@ -1438,5 +1443,120 @@ onShow(async () => {
   margin-top: 8rpx;
   margin-bottom: 16rpx;
   display: block;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .profile-header {
+  background: linear-gradient(135deg, #0a84ff 0%, #64d2ff 100%);
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .card {
+  background: #2c2c2e;
+}
+.dark-mode .bd-label {
+  color: #98989d;
+}
+.dark-mode .bd-value {
+  color: #f5f5f7;
+}
+.dark-mode .goal-label {
+  color: #98989d;
+}
+.dark-mode .goal-value {
+  color: #f5f5f7;
+}
+.dark-mode .goal-progress-bar {
+  background: #38383a;
+}
+.dark-mode .friend-name {
+  color: #f5f5f7;
+}
+.dark-mode .friend-status {
+  color: #98989d;
+}
+.dark-mode .setting-label {
+  color: #f5f5f7;
+}
+.dark-mode .setting-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .bd-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .goal-progress-section {
+  border-top-color: #38383a;
+  border-bottom-color: #38383a;
+}
+.dark-mode .friend-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .setting-arrow {
+  color: #636366;
+}
+.dark-mode .app-version {
+  color: #636366;
+}
+.dark-mode .logout-label {
+  color: #ff453a;
+}
+.dark-mode .picker-display {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .form-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .form-label {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-title {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-close {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .edit-form-scroll {
+  background: #2c2c2e;
+}
+.dark-mode .friend-search-row .form-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .search-user-name {
+  color: #f5f5f7;
+}
+.dark-mode .search-user-username {
+  color: #98989d;
+}
+.dark-mode .search-user-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .goal-edit-btn {
+  background: #38383a;
+  color: #0a84ff;
+}
+.dark-mode .bind-status.unbound {
+  color: #636366;
+}
+.dark-mode .bind-action {
+  color: #0a84ff;
+  border-color: #0a84ff;
+}
+.dark-mode .edit-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.dark-mode .error-msg-mini {
+  color: #ff453a;
+}
+.dark-mode .success-msg-mini {
+  color: #30d158;
 }
 </style>

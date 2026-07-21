@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Header -->
     <view class="page-header">
       <text class="page-title">体重记录</text>
@@ -233,9 +233,11 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
+const { isDark, initDark } = useDarkMode()
 
 const loading = ref(true)
 const weightRecords = ref([])
@@ -485,6 +487,7 @@ onLoad(async () => {
 
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
   if (!loading.value && weightRecords.value.length > 0) {
     await Promise.all([fetchWeights(), fetchLatestWeight(), fetchTodayWeight()])
   }
@@ -1129,5 +1132,117 @@ onShow(async () => {
   padding: 80rpx 40rpx;
   color: #aeaeb2;
   font-size: 28rpx;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .page-header {
+  background: #1a1a1a;
+}
+.dark-mode .page-title {
+  color: #f5f5f7;
+}
+.dark-mode .icon-btn {
+  background: #2c2c2e;
+}
+.dark-mode .card {
+  background: #2c2c2e;
+}
+.dark-mode .weight-main-card .weight-card-content {
+  color: #f5f5f7;
+}
+.dark-mode .range-tab {
+  background: #2c2c2e;
+  color: #98989d;
+}
+.dark-mode .chart-card {
+  background: #2c2c2e;
+}
+.dark-mode .chart-title {
+  color: #f5f5f7;
+}
+.dark-mode .chart-subtitle {
+  color: #98989d;
+}
+.dark-mode .stat-card {
+  background: #2c2c2e;
+}
+.dark-mode .stat-value {
+  color: #f5f5f7;
+}
+.dark-mode .stat-label {
+  color: #98989d;
+}
+.dark-mode .calendar-card {
+  background: #2c2c2e;
+}
+.dark-mode .cal-title {
+  color: #f5f5f7;
+}
+.dark-mode .cal-weekday {
+  color: #98989d;
+}
+.dark-mode .day-num {
+  color: #f5f5f7;
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .journal-card {
+  background: #2c2c2e;
+}
+.dark-mode .jd-day {
+  color: #f5f5f7;
+}
+.dark-mode .jd-month {
+  color: #98989d;
+}
+.dark-mode .jc-weight {
+  color: #f5f5f7;
+}
+.dark-mode .jc-unit {
+  color: #98989d;
+}
+.dark-mode .journal-tag {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .jc-note {
+  color: #636366;
+}
+.dark-mode .bottom-sheet {
+  background: #2c2c2e;
+}
+.dark-mode .sheet-title {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-close {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .form-label {
+  color: #f5f5f7;
+}
+.dark-mode .form-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .form-textarea {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .ph-class {
+  color: #636366;
+}
+.dark-mode .loading-text {
+  color: #98989d;
+}
+.dark-mode .y-label {
+  color: #636366;
+}
+.dark-mode .chart-bar-label {
+  color: #636366;
 }
 </style>

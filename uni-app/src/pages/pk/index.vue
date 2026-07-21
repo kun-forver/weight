@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Header -->
     <view class="page-header">
       <text class="page-title">PK对战</text>
@@ -229,9 +229,11 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
+const { isDark, initDark } = useDarkMode()
 const currentUserId = computed(() => authStore.user?.id)
 
 const loading = ref(true)
@@ -434,6 +436,7 @@ onLoad(async () => {
 
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
   if (!loading.value) {
     await Promise.all([fetchActiveBattle(), fetchHistory()])
   }
@@ -1055,5 +1058,126 @@ onShow(async () => {
   padding: 80rpx 40rpx;
   color: #aeaeb2;
   font-size: 28rpx;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .page-header {
+  background: #1a1a1a;
+}
+.dark-mode .page-title {
+  color: #f5f5f7;
+}
+.dark-mode .create-btn {
+  background: #0a84ff;
+}
+.dark-mode .stats-card {
+  background: #2c2c2e;
+}
+.dark-mode .stat-num {
+  color: #f5f5f7;
+}
+.dark-mode .stat-name {
+  color: #98989d;
+}
+.dark-mode .stat-divider {
+  background: #38383a;
+}
+.dark-mode .card {
+  background: #2c2c2e;
+}
+.dark-mode .battle-title {
+  color: #f5f5f7;
+}
+.dark-mode .battle-name {
+  color: #98989d;
+}
+.dark-mode .battle-score {
+  color: #f5f5f7;
+}
+.dark-mode .vs-text {
+  color: #636366;
+}
+.dark-mode .day-dots-info {
+  color: #98989d;
+}
+.dark-mode .day-dot {
+  background: #38383a;
+}
+.dark-mode .battle-reward {
+  background: #38383a;
+}
+.dark-mode .reward-text {
+  color: #f5f5f7;
+}
+.dark-mode .no-battle-text {
+  color: #98989d;
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .history-list {
+  background: #2c2c2e;
+}
+.dark-mode .history-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .history-name {
+  color: #f5f5f7;
+}
+.dark-mode .history-meta {
+  color: #98989d;
+}
+.dark-mode .my-score {
+  color: #f5f5f7;
+}
+.dark-mode .rival-score {
+  color: #98989d;
+}
+.dark-mode .bottom-sheet {
+  background: #2c2c2e;
+}
+.dark-mode .sheet-title {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-close {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .form-label {
+  color: #f5f5f7;
+}
+.dark-mode .form-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .date-picker-display {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .friend-option {
+  background: #38383a;
+}
+.dark-mode .friend-option.selected {
+  background: #0a3a6b;
+  border-color: #0a84ff;
+}
+.dark-mode .friend-name {
+  color: #f5f5f7;
+}
+.dark-mode .waiting-btn {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .no-battle-card {
+  background: #2c2c2e;
+}
+.dark-mode .ph-class {
+  color: #636366;
+}
+.dark-mode .loading-text {
+  color: #98989d;
 }
 </style>

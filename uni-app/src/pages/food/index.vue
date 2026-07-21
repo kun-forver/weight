@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :class="{ 'dark-mode': isDark }">
     <!-- Header -->
     <view class="page-header">
       <text class="page-title">饮食记录</text>
@@ -283,10 +283,12 @@ import { ref, reactive, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import { useDarkMode } from '../../utils/theme'
 import CalorieRingMini from '../../components/CalorieRing.vue'
 import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
+const { isDark, initDark } = useDarkMode()
 
 const currentDate = ref(new Date().toISOString().split('T')[0])
 const summary = ref(null)
@@ -614,6 +616,7 @@ onLoad(() => {
 
 onShow(() => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
+  initDark()
   if (!loading.value && foodLogs.value.length > 0) {
     fetchDayData()
   }
@@ -1349,5 +1352,153 @@ onShow(() => {
   padding: 80rpx 40rpx;
   color: #aeaeb2;
   font-size: 28rpx;
+}
+
+/* Dark Mode */
+.dark-mode {
+  background: #1a1a1a;
+}
+.dark-mode .page-header {
+  background: #1a1a1a;
+}
+.dark-mode .page-title {
+  color: #f5f5f7;
+}
+.dark-mode .icon-btn {
+  background: #2c2c2e;
+}
+.dark-mode .date-nav {
+  background: #2c2c2e;
+}
+.dark-mode .date-main {
+  color: #f5f5f7;
+}
+.dark-mode .card {
+  background: #2c2c2e;
+}
+.dark-mode .ss-label {
+  color: #98989d;
+}
+.dark-mode .meal-summary-card {
+  background: #2c2c2e;
+}
+.dark-mode .ms-name {
+  color: #98989d;
+}
+.dark-mode .ms-cal {
+  color: #f5f5f7;
+}
+.dark-mode .search-input {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+.dark-mode .cat-pill {
+  background: #2c2c2e;
+  color: #98989d;
+}
+.dark-mode .section-title {
+  color: #f5f5f7;
+}
+.dark-mode .quick-foods {
+  background: #2c2c2e;
+}
+.dark-mode .quick-food-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .qf-name {
+  color: #f5f5f7;
+}
+.dark-mode .qf-cal {
+  color: #98989d;
+}
+.dark-mode .meal-group {
+  background: #2c2c2e;
+}
+.dark-mode .meal-header {
+  border-bottom-color: #38383a;
+}
+.dark-mode .meal-name {
+  color: #f5f5f7;
+}
+.dark-mode .meal-add-btn {
+  background: #38383a;
+}
+.dark-mode .empty-meal {
+  color: #636366;
+}
+.dark-mode .log-item {
+  background: #2c2c2e;
+}
+.dark-mode .swipe-content {
+  background: #2c2c2e;
+}
+.dark-mode .log-name {
+  color: #f5f5f7;
+}
+.dark-mode .log-meta {
+  color: #98989d;
+}
+.dark-mode .log-delete-btn {
+  background: #38383a;
+}
+.dark-mode .bottom-sheet {
+  background: #2c2c2e;
+}
+.dark-mode .sheet-title {
+  color: #f5f5f7;
+}
+.dark-mode .sheet-close {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .sheet-result-item {
+  border-bottom-color: #38383a;
+}
+.dark-mode .custom-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .picker-display {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .custom-title-text {
+  color: #0a84ff;
+}
+.dark-mode .toggle-icon {
+  color: #0a84ff;
+}
+.dark-mode .selected-food-card {
+  background: #38383a;
+}
+.dark-mode .sf-name {
+  color: #f5f5f7;
+}
+.dark-mode .sf-cal {
+  color: #0a84ff;
+}
+.dark-mode .sf-nutri {
+  color: #98989d;
+}
+.dark-mode .amount-btn {
+  background: #38383a;
+  color: #0a84ff;
+}
+.dark-mode .amount-input {
+  background: #38383a;
+  color: #f5f5f7;
+}
+.dark-mode .amount-label {
+  color: #f5f5f7;
+}
+.dark-mode .meal-pill {
+  background: #38383a;
+  color: #98989d;
+}
+.dark-mode .custom-section {
+  border-top-color: #38383a;
+}
+.dark-mode .ph-class {
+  color: #636366;
 }
 </style>
