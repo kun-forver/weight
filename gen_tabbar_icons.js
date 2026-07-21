@@ -11,9 +11,9 @@ const { PNG } = require(path.join(NM, 'pngjs'))
 const TWEMOJI_DIR = 'C:/Users/坤先生的信/.qoderworkcn/workspace/mrkacwb66o1ze5tt/twemoji'
 const OUT_DIR = 'F:/weight/uni-app/src/static/tabbar'
 const SIZE = 81       // final canvas
-const EMOJI_PX = 45   // emoji content size
-const BG = 63         // active background rounded-rect size
-const BG_RADIUS = 16
+const EMOJI_PX = 55   // emoji content size
+const BG = 73         // active background rounded-rect size
+const BG_RADIUS = 18
 const BG_COLOR = [0, 122, 255, 46] // translucent blue (rgba)
 
 // [out-name, twemoji-codepoint]
