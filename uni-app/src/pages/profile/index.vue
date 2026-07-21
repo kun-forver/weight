@@ -739,7 +739,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
-  uni.hideTabBar({ animation: false })
+  try { uni.hideTabBar({ animation: false }) } catch (e) {}
   if (authStore.user) {
     await Promise.all([fetchFriends(), fetchLatestWeight()])
   }

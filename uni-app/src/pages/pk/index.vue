@@ -433,7 +433,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
-  uni.hideTabBar({ animation: false })
+  try { uni.hideTabBar({ animation: false }) } catch (e) {}
   if (!loading.value) {
     await Promise.all([fetchActiveBattle(), fetchHistory()])
   }

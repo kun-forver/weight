@@ -325,7 +325,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
-  uni.hideTabBar({ animation: false })
+  try { uni.hideTabBar({ animation: false }) } catch (e) {}
   if (authStore.user && !loading.value) {
     await fetchDashboard()
   }

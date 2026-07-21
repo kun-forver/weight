@@ -613,7 +613,7 @@ onLoad(() => {
 })
 
 onShow(() => {
-  uni.hideTabBar({ animation: false })
+  try { uni.hideTabBar({ animation: false }) } catch (e) {}
   if (!loading.value && foodLogs.value.length > 0) {
     fetchDayData()
   }
