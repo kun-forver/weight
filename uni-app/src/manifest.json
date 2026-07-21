@@ -1,11 +1,11 @@
 {
   "name": "减脂PK",
-  "appid": "wx048b360c2018c047",
+  "appid": "wxfe8d3a450416d5af",
   "description": "减脂PK - 减脂追踪与好友PK对战",
   "version": "1.0.0",
   "vueVersion": "3",
   "mp-weixin": {
-    "appid": "wx048b360c2018c047",
+    "appid": "wxfe8d3a450416d5af",
     "setting": {
       "urlCheck": true,
       "es6": true,
