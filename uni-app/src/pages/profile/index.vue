@@ -165,6 +165,10 @@
         <text class="setting-label">📤 导出数据</text>
         <text class="setting-arrow">›</text>
       </view>
+      <view v-if="user.role === 'admin'" class="setting-item" @tap="goToAdmin">
+        <text class="setting-label">👑 管理中心</text>
+        <text class="setting-arrow">›</text>
+      </view>
       <view class="setting-item">
         <text class="setting-label">💬 微信账号</text>
         <view class="bind-area">
@@ -598,6 +602,10 @@ async function acceptFriend(friendshipId) {
 
 function goToPK() {
   uni.switchTab({ url: '/pages/pk/index' })
+}
+
+function goToAdmin() {
+  uni.navigateTo({ url: '/pages/admin/index' })
 }
 
 async function fetchFriends() {

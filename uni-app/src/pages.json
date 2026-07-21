@@ -27,6 +27,10 @@
     {
       "path": "pages/register/index",
       "style": { "navigationBarTitleText": "注册", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/admin/index",
+      "style": { "navigationBarTitleText": "管理中心" }
     }
   ],
   "globalStyle": {
