@@ -617,6 +617,10 @@ onLoad(() => {
 onShow(() => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
   initDark()
+  uni.setNavigationBarColor({
+    frontColor: '#ffffff',
+    backgroundColor: isDark.value ? '#1a1a1a' : '#007aff',
+  })
   if (!loading.value && foodLogs.value.length > 0) {
     fetchDayData()
   }

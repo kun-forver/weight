@@ -488,6 +488,10 @@ onLoad(async () => {
 onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
   initDark()
+  uni.setNavigationBarColor({
+    frontColor: '#ffffff',
+    backgroundColor: isDark.value ? '#1a1a1a' : '#007aff',
+  })
   if (!loading.value && weightRecords.value.length > 0) {
     await Promise.all([fetchWeights(), fetchLatestWeight(), fetchTodayWeight()])
   }

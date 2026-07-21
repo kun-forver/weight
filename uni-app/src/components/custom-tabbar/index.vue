@@ -1,5 +1,5 @@
 <template>
-  <view class="ctab">
+  <view class="ctab" :class="{ 'ctab-dark': isDark }">
     <view
       v-for="(tab, i) in tabs"
       :key="tab.path"
@@ -15,8 +15,17 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+
 const props = defineProps({
   current: { type: Number, default: 0 },
+})
+
+const isDark = ref(false)
+
+onShow(() => {
+  isDark.value = !!uni.getStorageSync('dark_mode')
 })
 
 const tabs = [
@@ -46,6 +55,11 @@ function switchTo(i) {
   z-index: 999;
 }
 
+.ctab-dark {
+  background: #1a1a1a;
+  border-top-color: #38383a;
+}
+
 .ctab-item {
   flex: 1;
   display: flex;
@@ -68,6 +82,10 @@ function switchTo(i) {
   background: rgba(0, 122, 255, 0.13);
 }
 
+.ctab-dark .ctab-chip.on {
+  background: rgba(10, 132, 255, 0.2);
+}
+
 .ctab-icon {
   font-size: 44rpx;
   line-height: 1.15;
@@ -79,8 +97,16 @@ function switchTo(i) {
   color: #86868b;
 }
 
+.ctab-dark .ctab-label {
+  color: #98989d;
+}
+
 .ctab-label.on {
   color: #007aff;
   font-weight: 600;
+}
+
+.ctab-dark .ctab-label.on {
+  color: #0a84ff;
 }
 </style>

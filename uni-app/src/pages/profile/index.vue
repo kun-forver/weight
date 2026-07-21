@@ -753,6 +753,11 @@ onShow(async () => {
   try { uni.hideTabBar({ animation: false }) } catch (e) {}
   initDark()
   settings.darkMode = isDark.value
+  // Update native navigation bar for dark mode
+  uni.setNavigationBarColor({
+    frontColor: isDark.value ? '#ffffff' : '#ffffff',
+    backgroundColor: isDark.value ? '#1a1a1a' : '#007aff',
+  })
   if (authStore.user) {
     await Promise.all([fetchFriends(), fetchLatestWeight()])
   }
@@ -1450,7 +1455,21 @@ onShow(async () => {
   background: #1a1a1a;
 }
 .dark-mode .profile-header {
-  background: linear-gradient(135deg, #0a84ff 0%, #64d2ff 100%);
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+  border-bottom: 2rpx solid #38383a;
+}
+.dark-mode .tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #98989d;
+}
+.dark-mode .mini-stat {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .ms-value {
+  color: #f5f5f7;
+}
+.dark-mode .ms-label {
+  color: #98989d;
 }
 .dark-mode .section-title {
   color: #f5f5f7;
