@@ -220,6 +220,7 @@
         </view>
       </scroll-view>
     </view>
+    <custom-tabbar :current="3" />
   </view>
 </template>
 
@@ -228,6 +229,7 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
 const currentUserId = computed(() => authStore.user?.id)
@@ -431,6 +433,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
+  uni.hideTabBar({ animation: false })
   if (!loading.value) {
     await Promise.all([fetchActiveBattle(), fetchHistory()])
   }
@@ -441,7 +444,7 @@ onShow(async () => {
 .page {
   min-height: 100vh;
   background: #f5f5f7;
-  padding-bottom: 40rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .page-header {

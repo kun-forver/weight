@@ -314,6 +314,7 @@
         </button>
       </view>
     </view>
+    <custom-tabbar :current="4" />
   </view>
 </template>
 
@@ -322,6 +323,7 @@ import { ref, computed, reactive } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
 
@@ -737,6 +739,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
+  uni.hideTabBar({ animation: false })
   if (authStore.user) {
     await Promise.all([fetchFriends(), fetchLatestWeight()])
   }
@@ -747,7 +750,7 @@ onShow(async () => {
 .page {
   min-height: 100vh;
   background: #f5f5f7;
-  padding-bottom: 40rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .profile-header {

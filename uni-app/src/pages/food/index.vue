@@ -274,6 +274,7 @@
         </button>
       </view>
     </view>
+    <custom-tabbar :current="1" />
   </view>
 </template>
 
@@ -283,6 +284,7 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
 import CalorieRingMini from '../../components/CalorieRing.vue'
+import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
 
@@ -611,6 +613,7 @@ onLoad(() => {
 })
 
 onShow(() => {
+  uni.hideTabBar({ animation: false })
   if (!loading.value && foodLogs.value.length > 0) {
     fetchDayData()
   }
@@ -621,7 +624,7 @@ onShow(() => {
 .page {
   min-height: 100vh;
   background: #f5f5f7;
-  padding-bottom: 40rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .page-header {

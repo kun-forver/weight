@@ -140,31 +140,31 @@
 
     <!-- Body Journal List -->
     <text class="section-title">体重日志</text>
-    <view class="journal-list">
+    <view class="journal-grid">
       <view
         v-for="item in weightRecords"
         :key="item.id"
-        class="journal-item"
+        class="journal-card"
       >
-        <view class="journal-date">
-          <text class="jd-day">{{ formatDay(item.logged_at) }}</text>
-          <text class="jd-month">{{ formatMonth(item.logged_at) }}</text>
-        </view>
-        <view class="journal-content">
-          <view class="journal-weight-row">
-            <text class="journal-weight">{{ item.weight }}kg</text>
-            <text v-if="item.body_fat" class="journal-tag">体脂 {{ item.body_fat }}%</text>
-            <text v-if="item.muscle" class="journal-tag">肌肉 {{ item.muscle }}kg</text>
+        <view class="jc-top">
+          <view class="jc-date">
+            <text class="jd-day">{{ formatDay(item.logged_at) }}</text>
+            <text class="jd-month">{{ formatMonth(item.logged_at) }}</text>
           </view>
-          <text class="journal-note" v-if="item.note">{{ item.note }}</text>
+          <view class="jc-trend" v-if="item.trend">
+            <text :class="item.trend < 0 ? 'trend-down' : 'trend-up'">
+              {{ item.trend < 0 ? '↓' : '↑' }} {{ Math.abs(item.trend).toFixed(1) }}
+            </text>
+          </view>
         </view>
-        <view class="journal-trend" v-if="item.trend">
-          <text :class="item.trend < 0 ? 'trend-down' : 'trend-up'">
-            {{ item.trend < 0 ? '↓' : '↑' }} {{ Math.abs(item.trend).toFixed(1) }}
-          </text>
+        <text class="jc-weight">{{ item.weight }}<text class="jc-unit">kg</text></text>
+        <view class="jc-tags">
+          <text v-if="item.body_fat" class="journal-tag">体脂 {{ item.body_fat }}%</text>
+          <text v-if="item.muscle" class="journal-tag">肌肉 {{ item.muscle }}kg</text>
         </view>
+        <text class="jc-note" v-if="item.note">{{ item.note }}</text>
       </view>
-      <view v-if="weightRecords.length === 0" class="empty-state">
+      <view v-if="weightRecords.length === 0" class="empty-state full-width">
         <text>暂无体重记录</text>
       </view>
     </view>
@@ -224,6 +224,7 @@
         </button>
       </view>
     </view>
+    <custom-tabbar :current="2" />
   </view>
 </template>
 
@@ -232,6 +233,7 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import api from '../../api'
 import { useAuthStore } from '../../stores/auth'
+import CustomTabbar from '../../components/custom-tabbar/index.vue'
 
 const authStore = useAuthStore()
 
@@ -482,6 +484,7 @@ onLoad(async () => {
 })
 
 onShow(async () => {
+  uni.hideTabBar({ animation: false })
   if (!loading.value && weightRecords.value.length > 0) {
     await Promise.all([fetchWeights(), fetchLatestWeight(), fetchTodayWeight()])
   }
@@ -492,7 +495,7 @@ onShow(async () => {
 .page {
   min-height: 100vh;
   background: #f5f5f7;
-  padding-bottom: 40rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .page-header {
@@ -781,15 +784,14 @@ onShow(async () => {
 }
 
 .stat-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16rpx;
   padding: 0 32rpx;
   margin: 16rpx 0;
 }
 
 .stat-card {
-  width: calc(50% - 8rpx);
   background: #fff;
   border-radius: 28rpx;
   padding: 28rpx;
@@ -913,37 +915,37 @@ onShow(async () => {
   display: block;
 }
 
-.journal-list {
+.journal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
   margin: 0 32rpx;
-  background: #fff;
-  border-radius: 32rpx;
-  overflow: hidden;
   margin-bottom: 32rpx;
 }
 
-.journal-item {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-  padding: 24rpx 32rpx;
-  border-bottom: 2rpx solid #f0f0f2;
-}
-
-.journal-item:last-child {
-  border-bottom: none;
-}
-
-.journal-date {
-  flex-shrink: 0;
-  text-align: center;
-  width: 96rpx;
+.journal-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+.jc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+
+.jc-date {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
 }
 
 .jd-day {
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: #1d1d1f;
 }
@@ -953,46 +955,56 @@ onShow(async () => {
   color: #86868b;
 }
 
-.journal-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.journal-weight-row {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-}
-
-.journal-weight {
-  font-size: 30rpx;
+.jc-trend {
+  font-size: 24rpx;
   font-weight: 600;
+}
+
+.jc-weight {
+  font-size: 44rpx;
+  font-weight: 700;
   color: #1d1d1f;
+  line-height: 1.1;
+}
+
+.jc-unit {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #86868b;
+  margin-left: 4rpx;
+}
+
+.jc-tags {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+  margin-top: 12rpx;
 }
 
 .journal-tag {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: #86868b;
   background: #f5f5f7;
-  padding: 2rpx 12rpx;
+  padding: 4rpx 12rpx;
   border-radius: 12rpx;
   font-weight: 400;
 }
 
-.journal-note {
-  font-size: 24rpx;
-  color: #86868b;
-  margin-top: 8rpx;
-}
-
-.journal-trend {
-  font-size: 28rpx;
-  font-weight: 600;
+.jc-note {
+  font-size: 22rpx;
+  color: #aeaeb2;
+  margin-top: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .trend-down { color: #34c759; }
 .trend-up { color: #ff3b30; }
+
+.full-width {
+  width: 100%;
+}
 
 .bottom-sheet-backdrop {
   position: fixed;
