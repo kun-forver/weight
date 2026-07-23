@@ -767,7 +767,7 @@ onShow(async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -918,7 +918,7 @@ onShow(async () => {
   font-size: 32rpx;
   font-weight: 600;
   margin: 32rpx 32rpx 16rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
 }
 
@@ -943,7 +943,7 @@ onShow(async () => {
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   margin: 0 32rpx 16rpx;
   overflow: hidden;
@@ -958,7 +958,7 @@ onShow(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 24rpx 0;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .bd-item:last-child {
@@ -967,7 +967,7 @@ onShow(async () => {
 
 .bd-label {
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .bd-value-row {
@@ -979,13 +979,13 @@ onShow(async () => {
 .bd-value {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .bd-unit {
   font-size: 24rpx;
   font-weight: 400;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .bmi-low { color: #007aff; }
@@ -1012,7 +1012,7 @@ onShow(async () => {
 
 .goal-label {
   font-size: 26rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-bottom: 4rpx;
 }
 
@@ -1025,18 +1025,18 @@ onShow(async () => {
 .goal-value {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .goal-value-unit {
   font-size: 26rpx;
   font-weight: 400;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .goal-edit-btn {
   padding: 12rpx 28rpx;
-  background: #f0f0f2;
+  background: var(--border-color);
   border-radius: 20rpx;
   color: #007aff;
   font-size: 26rpx;
@@ -1046,13 +1046,13 @@ onShow(async () => {
 .goal-progress-section {
   margin: 24rpx 0;
   padding: 24rpx 0;
-  border-top: 2rpx solid #f0f0f2;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-top: 2rpx solid var(--border-color);
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .goal-progress-bar {
   height: 16rpx;
-  background: #f0f0f2;
+  background: var(--border-color);
   border-radius: 8rpx;
   overflow: hidden;
   margin-bottom: 12rpx;
@@ -1073,7 +1073,7 @@ onShow(async () => {
 
 .goal-progress-text {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .goal-remain {
@@ -1090,7 +1090,7 @@ onShow(async () => {
   align-items: center;
   gap: 24rpx;
   padding: 24rpx 0;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .friend-item:last-child {
@@ -1120,7 +1120,7 @@ onShow(async () => {
 .friend-name {
   font-size: 30rpx;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .friend-status {
@@ -1159,7 +1159,7 @@ onShow(async () => {
   justify-content: space-between;
   align-items: center;
   padding: 28rpx 0;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .setting-item:last-child {
@@ -1172,7 +1172,7 @@ onShow(async () => {
 
 .setting-label {
   font-size: 30rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .logout-label {
@@ -1181,7 +1181,7 @@ onShow(async () => {
 
 .setting-arrow {
   font-size: 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .bind-area {
@@ -1199,7 +1199,7 @@ onShow(async () => {
 }
 
 .bind-status.unbound {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .bind-action {
@@ -1217,7 +1217,7 @@ onShow(async () => {
 
 .app-version {
   font-size: 26rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .bottom-sheet-backdrop {
@@ -1232,7 +1232,7 @@ onShow(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 40rpx 40rpx 0 0;
   padding: 40rpx;
   z-index: 201;
@@ -1255,16 +1255,16 @@ onShow(async () => {
 .sheet-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sheet-close {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1293,7 +1293,7 @@ onShow(async () => {
 
 .form-label {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
   display: block;
   margin-bottom: 12rpx;
@@ -1302,15 +1302,15 @@ onShow(async () => {
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 30rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .ph-class {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .form-picker {
@@ -1320,11 +1320,11 @@ onShow(async () => {
 .picker-display {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 30rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   line-height: 88rpx;
 }
 
@@ -1382,7 +1382,7 @@ onShow(async () => {
   align-items: center;
   gap: 24rpx;
   padding: 20rpx 0;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .search-user-avatar {
@@ -1407,12 +1407,12 @@ onShow(async () => {
 .search-user-name {
   font-size: 30rpx;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .search-user-username {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -1428,7 +1428,7 @@ onShow(async () => {
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 28rpx;
 }
 
@@ -1450,132 +1450,4 @@ onShow(async () => {
   display: block;
 }
 
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .profile-header {
-  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
-  border-bottom: 2rpx solid #38383a;
-}
-.dark-mode .tag {
-  background: rgba(255, 255, 255, 0.1);
-  color: #98989d;
-}
-.dark-mode .mini-stat {
-  background: rgba(255, 255, 255, 0.08);
-}
-.dark-mode .ms-value {
-  color: #f5f5f7;
-}
-.dark-mode .ms-label {
-  color: #98989d;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .card {
-  background: #2c2c2e;
-}
-.dark-mode .bd-label {
-  color: #98989d;
-}
-.dark-mode .bd-value {
-  color: #f5f5f7;
-}
-.dark-mode .goal-label {
-  color: #98989d;
-}
-.dark-mode .goal-value {
-  color: #f5f5f7;
-}
-.dark-mode .goal-progress-bar {
-  background: #38383a;
-}
-.dark-mode .friend-name {
-  color: #f5f5f7;
-}
-.dark-mode .friend-status {
-  color: #98989d;
-}
-.dark-mode .setting-label {
-  color: #f5f5f7;
-}
-.dark-mode .setting-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .bd-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .goal-progress-section {
-  border-top-color: #38383a;
-  border-bottom-color: #38383a;
-}
-.dark-mode .friend-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .setting-arrow {
-  color: #636366;
-}
-.dark-mode .app-version {
-  color: #636366;
-}
-.dark-mode .logout-label {
-  color: #ff453a;
-}
-.dark-mode .picker-display {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .form-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .form-label {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-title {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-close {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .edit-form-scroll {
-  background: #2c2c2e;
-}
-.dark-mode .friend-search-row .form-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .search-user-name {
-  color: #f5f5f7;
-}
-.dark-mode .search-user-username {
-  color: #98989d;
-}
-.dark-mode .search-user-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .goal-edit-btn {
-  background: #38383a;
-  color: #0a84ff;
-}
-.dark-mode .bind-status.unbound {
-  color: #636366;
-}
-.dark-mode .bind-action {
-  color: #0a84ff;
-  border-color: #0a84ff;
-}
-.dark-mode .edit-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-.dark-mode .error-msg-mini {
-  color: #ff453a;
-}
-.dark-mode .success-msg-mini {
-  color: #30d158;
-}
 </style>

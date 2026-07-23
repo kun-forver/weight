@@ -353,7 +353,7 @@ onShow(async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -362,11 +362,11 @@ onShow(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--header-bg);
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1rpx solid #f0f0f2;
+  border-bottom: 1rpx solid var(--border-color);
 }
 
 .header-left {
@@ -407,12 +407,12 @@ onShow(async () => {
 .hello {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .date-text {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -428,7 +428,7 @@ onShow(async () => {
   justify-content: center;
   font-size: 36rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
 }
 
 .loading-overlay {
@@ -446,7 +446,7 @@ onShow(async () => {
   display: flex;
   justify-content: center;
   padding: 48rpx 0 32rpx;
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .stat-row {
@@ -458,14 +458,14 @@ onShow(async () => {
 
 .stat-card {
   flex: 1;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 28rpx;
   padding: 24rpx 16rpx;
   text-align: center;
   position: relative;
   overflow: hidden;
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.01);
-  border: 2rpx solid #f0f0f2;
+  border: 2rpx solid var(--border-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -486,19 +486,19 @@ onShow(async () => {
 
 .stat-label {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-bottom: 12rpx;
 }
 
 .stat-value {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .stat-unit {
   font-size: 20rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   margin-top: 4rpx;
 }
 
@@ -511,7 +511,7 @@ onShow(async () => {
 
 .action-tile {
   flex: 1;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 28rpx;
   padding: 24rpx 8rpx;
   text-align: center;
@@ -519,7 +519,7 @@ onShow(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 3rpx solid #f0f0f2;
+  border: 3rpx solid var(--border-color);
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.01);
 }
 
@@ -530,16 +530,16 @@ onShow(async () => {
 
 .tile-label {
   font-size: 22rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 32rpx;
   margin: 0 32rpx 24rpx;
-  border: 3rpx solid #f0f0f2;
+  border: 3rpx solid var(--border-color);
 }
 
 .card-title-row {
@@ -552,12 +552,12 @@ onShow(async () => {
 .card-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 22rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .nutrition-item {
@@ -577,19 +577,19 @@ onShow(async () => {
 
 .nutri-name {
   font-size: 26rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .nutri-values {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .progress-bar-bg {
   width: 100%;
   height: 16rpx;
-  background: #f0f0f2;
+  background: var(--border-color);
   border-radius: 8rpx;
   overflow: hidden;
 }
@@ -731,7 +731,7 @@ onShow(async () => {
 .section-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
   padding: 0 32rpx;
   margin-bottom: 16rpx;
   margin-top: 8rpx;
@@ -749,7 +749,7 @@ onShow(async () => {
   font-size: 52rpx;
   width: 72rpx;
   height: 72rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -765,7 +765,7 @@ onShow(async () => {
 .src-title {
   font-size: 28rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .src-desc-row {
@@ -777,126 +777,24 @@ onShow(async () => {
 
 .src-desc {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .src-strong {
   font-size: 24rpx;
-  color: #007aff;
+  color: var(--primary);
   font-weight: 600;
 }
 
 .src-desc-alone {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
 .src-arrow {
   font-size: 36rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-family: monospace;
-}
-
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .dash-header {
-  background: #1a1a1a;
-  border-bottom-color: #38383a;
-}
-.dark-mode .avatar {
-  background: linear-gradient(135deg, #0a84ff, #64d2ff);
-}
-.dark-mode .hello {
-  color: #f5f5f7;
-}
-.dark-mode .date-text {
-  color: #98989d;
-}
-.dark-mode .calorie-section {
-  background: #2c2c2e;
-}
-.dark-mode .greeting {
-  color: #f5f5f7;
-}
-.dark-mode .stat-card {
-  background: #2c2c2e;
-}
-.dark-mode .sc-label {
-  color: #98989d;
-}
-.dark-mode .sc-value {
-  color: #f5f5f7;
-}
-.dark-mode .sc-unit {
-  color: #98989d;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .shortcut-card {
-  background: #2c2c2e;
-}
-.dark-mode .sc-icon {
-  background: #38383a;
-}
-.dark-mode .sc-name {
-  color: #f5f5f7;
-}
-.dark-mode .quick-section .card {
-  background: #2c2c2e;
-}
-.dark-mode .log-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .log-name {
-  color: #f5f5f7;
-}
-.dark-mode .log-meta {
-  color: #98989d;
-}
-.dark-mode .weight-card {
-  background: #2c2c2e;
-}
-.dark-mode .wc-label {
-  color: #98989d;
-}
-.dark-mode .wc-value {
-  color: #f5f5f7;
-}
-.dark-mode .wc-unit {
-  color: #98989d;
-}
-.dark-mode .wc-change {
-  color: #98989d;
-}
-.dark-mode .pk-card {
-  background: #2c2c2e;
-}
-.dark-mode .pk-name {
-  color: #f5f5f7;
-}
-.dark-mode .pk-meta {
-  color: #98989d;
-}
-.dark-mode .pk-vs {
-  color: #636366;
-}
-.dark-mode .pk-score {
-  color: #f5f5f7;
-}
-.dark-mode .src-label {
-  color: #98989d;
-}
-.dark-mode .src-value {
-  color: #f5f5f7;
-}
-.dark-mode .src-change {
-  color: #98989d;
-}
-.dark-mode .src-arrow {
-  color: #636366;
 }
 </style>

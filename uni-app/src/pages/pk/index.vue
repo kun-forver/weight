@@ -450,7 +450,7 @@ onShow(async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -459,7 +459,7 @@ onShow(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -470,7 +470,7 @@ onShow(async () => {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .create-btn {
@@ -485,7 +485,7 @@ onShow(async () => {
 .loading-text {
   text-align: center;
   padding: 40rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 120rpx;
   font-size: 28rpx;
 }
@@ -494,7 +494,7 @@ onShow(async () => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 36rpx 32rpx;
   margin: 136rpx 32rpx 16rpx;
@@ -511,7 +511,7 @@ onShow(async () => {
 .stat-num {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .stat-num.win { color: #34c759; }
@@ -519,18 +519,18 @@ onShow(async () => {
 
 .stat-name {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 8rpx;
 }
 
 .stat-divider {
   width: 2rpx;
   height: 60rpx;
-  background: #f0f0f2;
+  background: var(--border-color);
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 32rpx;
   margin: 16rpx 32rpx;
@@ -550,7 +550,7 @@ onShow(async () => {
 .battle-title {
   font-size: 34rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .battle-status {
@@ -562,7 +562,7 @@ onShow(async () => {
 
 .status-active { background: #e8f5e9; color: #34c759; }
 .status-pending { background: #fff3cd; color: #ff9500; }
-.status-done { background: #f0f0f2; color: #86868b; }
+.status-done { background: var(--border-color); color: #86868b; }
 
 .battle-arena {
   display: flex;
@@ -599,14 +599,14 @@ onShow(async () => {
 
 .battle-name {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-bottom: 8rpx;
 }
 
 .battle-score {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .battle-pct {
@@ -629,7 +629,7 @@ onShow(async () => {
 .vs-text {
   font-size: 40rpx;
   font-weight: 800;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .lead-indicator {
@@ -644,7 +644,7 @@ onShow(async () => {
   height: 16rpx;
   border-radius: 8rpx;
   overflow: hidden;
-  background: #f0f0f2;
+  background: var(--border-color);
   margin: 16rpx 0 32rpx;
 }
 
@@ -667,7 +667,7 @@ onShow(async () => {
   display: flex;
   justify-content: space-between;
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-bottom: 16rpx;
 }
 
@@ -686,7 +686,7 @@ onShow(async () => {
   width: 24rpx;
   height: 24rpx;
   border-radius: 50%;
-  background: #e5e5ea;
+  background: var(--border-color);
 }
 
 .day-dot.done {
@@ -697,7 +697,7 @@ onShow(async () => {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  background: #fffbf0;
+  background: var(--card-bg);
   border-radius: 24rpx;
   padding: 20rpx 28rpx;
   margin-bottom: 28rpx;
@@ -709,7 +709,7 @@ onShow(async () => {
 
 .reward-text {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -734,8 +734,8 @@ onShow(async () => {
 }
 
 .waiting-btn {
-  background: #f5f5f7;
-  color: #86868b;
+  background: var(--input-bg);
+  color: var(--text-secondary);
   text-align: center;
   font-size: 28rpx;
   font-weight: 500;
@@ -765,7 +765,7 @@ onShow(async () => {
 
 .no-battle-text {
   font-size: 30rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-bottom: 32rpx;
 }
 
@@ -784,13 +784,13 @@ onShow(async () => {
   font-size: 32rpx;
   font-weight: 600;
   margin: 32rpx 32rpx 16rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
 }
 
 .history-list {
   margin: 0 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   overflow: hidden;
   margin-bottom: 32rpx;
@@ -801,7 +801,7 @@ onShow(async () => {
   align-items: center;
   gap: 24rpx;
   padding: 28rpx 32rpx;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .history-item:last-child {
@@ -822,7 +822,7 @@ onShow(async () => {
 
 .result-text {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -838,12 +838,12 @@ onShow(async () => {
 .history-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .history-meta {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -857,13 +857,13 @@ onShow(async () => {
 .my-score {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .my-score.win { color: #34c759; }
 .my-score.lose { color: #ff3b30; }
 
-.score-sep { color: #aeaeb2; }
+.score-sep { color: var(--text-tertiary); }
 .rival-score { color: #86868b; font-size: 30rpx; font-weight: 600; }
 
 .bottom-sheet-backdrop {
@@ -878,7 +878,7 @@ onShow(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 40rpx 40rpx 0 0;
   padding: 40rpx;
   z-index: 201;
@@ -901,16 +901,16 @@ onShow(async () => {
 .sheet-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sheet-close {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -939,7 +939,7 @@ onShow(async () => {
 
 .form-label {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
   display: block;
   margin-bottom: 12rpx;
@@ -948,25 +948,25 @@ onShow(async () => {
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 30rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .ph-class {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .date-picker-display {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 30rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   line-height: 88rpx;
 }
 
@@ -1003,12 +1003,12 @@ onShow(async () => {
   gap: 20rpx;
   padding: 20rpx 24rpx;
   border-radius: 24rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   margin-bottom: 12rpx;
 }
 
 .friend-option.selected {
-  background: #eef4ff;
+  background: rgba(0, 122, 255, 0.15);
   border: 3rpx solid #007aff;
 }
 
@@ -1029,7 +1029,7 @@ onShow(async () => {
 .friend-name {
   flex: 1;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .check-mark {
@@ -1060,128 +1060,8 @@ onShow(async () => {
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 28rpx;
 }
 
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .page-header {
-  background: #1a1a1a;
-}
-.dark-mode .page-title {
-  color: #f5f5f7;
-}
-.dark-mode .create-btn {
-  background: #0a84ff;
-}
-.dark-mode .stats-card {
-  background: #2c2c2e;
-}
-.dark-mode .stat-num {
-  color: #f5f5f7;
-}
-.dark-mode .stat-name {
-  color: #98989d;
-}
-.dark-mode .stat-divider {
-  background: #38383a;
-}
-.dark-mode .card {
-  background: #2c2c2e;
-}
-.dark-mode .battle-title {
-  color: #f5f5f7;
-}
-.dark-mode .battle-name {
-  color: #98989d;
-}
-.dark-mode .battle-score {
-  color: #f5f5f7;
-}
-.dark-mode .vs-text {
-  color: #636366;
-}
-.dark-mode .day-dots-info {
-  color: #98989d;
-}
-.dark-mode .day-dot {
-  background: #38383a;
-}
-.dark-mode .battle-reward {
-  background: #38383a;
-}
-.dark-mode .reward-text {
-  color: #f5f5f7;
-}
-.dark-mode .no-battle-text {
-  color: #98989d;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .history-list {
-  background: #2c2c2e;
-}
-.dark-mode .history-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .history-name {
-  color: #f5f5f7;
-}
-.dark-mode .history-meta {
-  color: #98989d;
-}
-.dark-mode .my-score {
-  color: #f5f5f7;
-}
-.dark-mode .rival-score {
-  color: #98989d;
-}
-.dark-mode .bottom-sheet {
-  background: #2c2c2e;
-}
-.dark-mode .sheet-title {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-close {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .form-label {
-  color: #f5f5f7;
-}
-.dark-mode .form-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .date-picker-display {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .friend-option {
-  background: #38383a;
-}
-.dark-mode .friend-option.selected {
-  background: #0a3a6b;
-  border-color: #0a84ff;
-}
-.dark-mode .friend-name {
-  color: #f5f5f7;
-}
-.dark-mode .waiting-btn {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .no-battle-card {
-  background: #2c2c2e;
-}
-.dark-mode .ph-class {
-  color: #636366;
-}
-.dark-mode .loading-text {
-  color: #98989d;
-}
 </style>

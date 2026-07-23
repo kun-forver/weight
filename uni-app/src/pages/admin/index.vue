@@ -208,7 +208,7 @@ onLoad(async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -217,7 +217,7 @@ onLoad(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -228,7 +228,7 @@ onLoad(async () => {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .stats-grid {
@@ -239,7 +239,7 @@ onLoad(async () => {
 }
 
 .stat-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 24rpx;
   padding: 28rpx;
   text-align: center;
@@ -256,12 +256,12 @@ onLoad(async () => {
 .stat-value {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .stat-label {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -269,13 +269,13 @@ onLoad(async () => {
   font-size: 32rpx;
   font-weight: 600;
   margin: 32rpx 32rpx 16rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
 }
 
 .user-list {
   margin: 0 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 24rpx;
   overflow: hidden;
 }
@@ -285,7 +285,7 @@ onLoad(async () => {
   align-items: center;
   gap: 20rpx;
   padding: 24rpx 28rpx;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .user-item:last-child {
@@ -327,7 +327,7 @@ onLoad(async () => {
 .user-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .admin-tag {
@@ -340,19 +340,19 @@ onLoad(async () => {
 
 .user-meta {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
 .arrow {
   font-size: 36rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 28rpx;
 }
 
@@ -369,7 +369,7 @@ onLoad(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 40rpx 40rpx 0 0;
   padding: 40rpx;
   z-index: 201;
@@ -392,7 +392,7 @@ onLoad(async () => {
 .sheet-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sheet-close {
@@ -401,7 +401,7 @@ onLoad(async () => {
   border-radius: 50%;
   background: #f5f5f7;
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -418,7 +418,7 @@ onLoad(async () => {
 .detail-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 16rpx;
 }
@@ -437,14 +437,14 @@ onLoad(async () => {
 
 .di-label {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: block;
 }
 
 .di-value {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   margin-top: 4rpx;
   display: block;
 }
@@ -469,19 +469,19 @@ onLoad(async () => {
 
 .wr-date {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   width: 160rpx;
 }
 
 .wr-value {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .wr-note {
   font-size: 22rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   flex: 1;
   text-align: right;
 }
@@ -489,86 +489,8 @@ onLoad(async () => {
 .loading-state {
   text-align: center;
   padding: 80rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   font-size: 28rpx;
 }
 
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .page-header {
-  background: #1a1a1a;
-}
-.dark-mode .page-title {
-  color: #f5f5f7;
-}
-.dark-mode .stat-card {
-  background: #2c2c2e;
-}
-.dark-mode .stat-value {
-  color: #f5f5f7;
-}
-.dark-mode .stat-label {
-  color: #98989d;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .user-list {
-  background: #2c2c2e;
-}
-.dark-mode .user-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .user-name {
-  color: #f5f5f7;
-}
-.dark-mode .user-meta {
-  color: #98989d;
-}
-.dark-mode .admin-tag {
-  background: #3a2a00;
-  color: #ff9f0a;
-}
-.dark-mode .bottom-sheet {
-  background: #2c2c2e;
-}
-.dark-mode .sheet-title {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-close {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .detail-label {
-  color: #f5f5f7;
-}
-.dark-mode .detail-item {
-  background: #38383a;
-}
-.dark-mode .di-label {
-  color: #98989d;
-}
-.dark-mode .di-value {
-  color: #f5f5f7;
-}
-.dark-mode .weight-list {
-  background: #38383a;
-}
-.dark-mode .weight-row {
-  border-bottom-color: #48484a;
-}
-.dark-mode .wr-date {
-  color: #98989d;
-}
-.dark-mode .wr-value {
-  color: #f5f5f7;
-}
-.dark-mode .wr-note {
-  color: #636366;
-}
-.dark-mode .loading-state {
-  color: #98989d;
-}
 </style>

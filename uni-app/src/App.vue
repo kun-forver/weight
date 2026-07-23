@@ -58,6 +58,20 @@ page {
   --radius-lg: 16px;
 }
 
+/* Dark Mode overrides via class on page root */
+page.dark-mode,
+.dark-mode {
+  --bg-color: #1a1a1a;
+  --card-bg: #2c2c2e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-tertiary: #636366;
+  --border-color: #38383a;
+  --header-bg: #1a1a1a;
+  --sheet-bg: #2c2c2e;
+  --input-bg: #38383a;
+}
+
 /* Shared utility classes */
 .page {
   min-height: 100vh;

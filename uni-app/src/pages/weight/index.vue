@@ -501,7 +501,7 @@ onShow(async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -510,7 +510,7 @@ onShow(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -521,7 +521,7 @@ onShow(async () => {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .icon-btn {
@@ -532,19 +532,19 @@ onShow(async () => {
   justify-content: center;
   font-size: 36rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
 }
 
 .loading-text {
   text-align: center;
   padding: 40rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 120rpx;
   font-size: 28rpx;
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 32rpx;
   margin: 16rpx 32rpx;
@@ -694,9 +694,9 @@ onShow(async () => {
   flex: 1;
   height: 72rpx;
   border-radius: 24rpx;
-  background: #fff;
+  background: var(--card-bg);
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   text-align: center;
   line-height: 72rpx;
 }
@@ -721,12 +721,12 @@ onShow(async () => {
 .chart-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .chart-subtitle {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .bar-chart {
@@ -740,15 +740,15 @@ onShow(async () => {
   flex-direction: column;
   justify-content: space-between;
   font-size: 20rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   padding-right: 12rpx;
-  border-right: 2rpx solid #f0f0f2;
+  border-right: 2rpx solid var(--border-color);
   height: 300rpx;
 }
 
 .y-label {
   font-size: 20rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .chart-bars-scroll {
@@ -786,7 +786,7 @@ onShow(async () => {
   position: absolute;
   bottom: 0;
   font-size: 18rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   white-space: nowrap;
 }
 
@@ -799,7 +799,7 @@ onShow(async () => {
 }
 
 .stat-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 28rpx;
   padding: 28rpx;
   text-align: center;
@@ -822,18 +822,18 @@ onShow(async () => {
 .stat-value {
   font-size: 44rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .stat-unit {
   font-size: 24rpx;
   font-weight: 400;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .stat-label {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -851,7 +851,7 @@ onShow(async () => {
 .cal-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .cal-count {
@@ -872,7 +872,7 @@ onShow(async () => {
   flex: 1;
   text-align: center;
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -898,7 +898,7 @@ onShow(async () => {
 
 .day-num {
   font-size: 26rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .cal-day.recorded .day-num {
@@ -918,7 +918,7 @@ onShow(async () => {
   font-size: 32rpx;
   font-weight: 600;
   margin: 32rpx 32rpx 16rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
 }
 
@@ -931,7 +931,7 @@ onShow(async () => {
 }
 
 .journal-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 24rpx;
   padding: 24rpx;
   display: flex;
@@ -954,12 +954,12 @@ onShow(async () => {
 .jd-day {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .jd-month {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .jc-trend {
@@ -970,14 +970,14 @@ onShow(async () => {
 .jc-weight {
   font-size: 44rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
   line-height: 1.1;
 }
 
 .jc-unit {
   font-size: 24rpx;
   font-weight: 400;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-left: 4rpx;
 }
 
@@ -990,8 +990,8 @@ onShow(async () => {
 
 .journal-tag {
   font-size: 20rpx;
-  color: #86868b;
-  background: #f5f5f7;
+  color: var(--text-secondary);
+  background: var(--input-bg);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
   font-weight: 400;
@@ -999,7 +999,7 @@ onShow(async () => {
 
 .jc-note {
   font-size: 22rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   margin-top: 12rpx;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1025,7 +1025,7 @@ onShow(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 40rpx 40rpx 0 0;
   padding: 40rpx;
   z-index: 201;
@@ -1048,16 +1048,16 @@ onShow(async () => {
 .sheet-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sheet-close {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1082,7 +1082,7 @@ onShow(async () => {
 
 .form-label {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
   display: block;
   margin-bottom: 12rpx;
@@ -1091,24 +1091,24 @@ onShow(async () => {
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 32rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .ph-class {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 
 .form-textarea {
   width: 100%;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   padding: 20rpx 28rpx;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   min-height: 120rpx;
 }
 
@@ -1134,119 +1134,8 @@ onShow(async () => {
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 28rpx;
 }
 
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .page-header {
-  background: #1a1a1a;
-}
-.dark-mode .page-title {
-  color: #f5f5f7;
-}
-.dark-mode .icon-btn {
-  background: #2c2c2e;
-}
-.dark-mode .card {
-  background: #2c2c2e;
-}
-.dark-mode .weight-main-card .weight-card-content {
-  color: #f5f5f7;
-}
-.dark-mode .range-tab {
-  background: #2c2c2e;
-  color: #98989d;
-}
-.dark-mode .chart-card {
-  background: #2c2c2e;
-}
-.dark-mode .chart-title {
-  color: #f5f5f7;
-}
-.dark-mode .chart-subtitle {
-  color: #98989d;
-}
-.dark-mode .stat-card {
-  background: #2c2c2e;
-}
-.dark-mode .stat-value {
-  color: #f5f5f7;
-}
-.dark-mode .stat-label {
-  color: #98989d;
-}
-.dark-mode .calendar-card {
-  background: #2c2c2e;
-}
-.dark-mode .cal-title {
-  color: #f5f5f7;
-}
-.dark-mode .cal-weekday {
-  color: #98989d;
-}
-.dark-mode .day-num {
-  color: #f5f5f7;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .journal-card {
-  background: #2c2c2e;
-}
-.dark-mode .jd-day {
-  color: #f5f5f7;
-}
-.dark-mode .jd-month {
-  color: #98989d;
-}
-.dark-mode .jc-weight {
-  color: #f5f5f7;
-}
-.dark-mode .jc-unit {
-  color: #98989d;
-}
-.dark-mode .journal-tag {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .jc-note {
-  color: #636366;
-}
-.dark-mode .bottom-sheet {
-  background: #2c2c2e;
-}
-.dark-mode .sheet-title {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-close {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .form-label {
-  color: #f5f5f7;
-}
-.dark-mode .form-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .form-textarea {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .ph-class {
-  color: #636366;
-}
-.dark-mode .loading-text {
-  color: #98989d;
-}
-.dark-mode .y-label {
-  color: #636366;
-}
-.dark-mode .chart-bar-label {
-  color: #636366;
-}
 </style>

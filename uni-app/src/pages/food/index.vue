@@ -630,7 +630,7 @@ onShow(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-color);
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
@@ -639,7 +639,7 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -650,7 +650,7 @@ onShow(() => {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .icon-btn {
@@ -661,7 +661,7 @@ onShow(() => {
   justify-content: center;
   font-size: 36rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
 }
 
 .date-nav {
@@ -669,7 +669,7 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   margin-top: 120rpx;
 }
 
@@ -693,7 +693,7 @@ onShow(() => {
 .date-main {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .date-sub {
@@ -702,7 +702,7 @@ onShow(() => {
 }
 
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 32rpx;
   margin: 16rpx 32rpx;
@@ -744,7 +744,7 @@ onShow(() => {
 
 .ss-label {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -757,7 +757,7 @@ onShow(() => {
 
 .meal-summary-card {
   flex: 1;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 24rpx;
   padding: 20rpx 12rpx;
   text-align: center;
@@ -772,14 +772,14 @@ onShow(() => {
 
 .ms-name {
   font-size: 22rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
 .ms-cal {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   margin-top: 4rpx;
 }
 
@@ -798,11 +798,11 @@ onShow(() => {
 .search-input {
   flex: 1;
   height: 80rpx;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .ph-class {
@@ -841,8 +841,8 @@ onShow(() => {
   padding: 12rpx 28rpx;
   border-radius: 40rpx;
   font-size: 26rpx;
-  color: #86868b;
-  background: #fff;
+  color: var(--text-secondary);
+  background: var(--card-bg);
   transition: all 0.2s;
 }
 
@@ -856,13 +856,13 @@ onShow(() => {
   font-size: 32rpx;
   font-weight: 600;
   margin: 32rpx 32rpx 16rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
 }
 
 .quick-foods {
   margin: 0 32rpx;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   overflow: hidden;
 }
@@ -872,7 +872,7 @@ onShow(() => {
   align-items: center;
   gap: 24rpx;
   padding: 24rpx 32rpx;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .quick-food-item:last-child {
@@ -894,12 +894,12 @@ onShow(() => {
 .qf-name {
   font-size: 28rpx;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .qf-cal {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -936,12 +936,12 @@ onShow(() => {
 }
 
 .search-results .quick-food-item {
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .meal-group {
   margin: 0 32rpx 24rpx;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 32rpx;
   padding: 28rpx 32rpx;
 }
@@ -952,20 +952,20 @@ onShow(() => {
   align-items: center;
   margin-bottom: 16rpx;
   padding-bottom: 16rpx;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .meal-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .meal-add-btn {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
-  background: #f0f0f2;
+  background: var(--input-bg);
   color: #007aff;
   font-size: 40rpx;
   display: flex;
@@ -976,7 +976,7 @@ onShow(() => {
 
 .empty-meal {
   font-size: 26rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   padding: 16rpx 0;
   text-align: center;
 }
@@ -986,7 +986,7 @@ onShow(() => {
   align-items: center;
   gap: 24rpx;
   padding: 16rpx 32rpx;
-  background: #fff;
+  background: var(--card-bg);
 }
 
 .swipe-container {
@@ -1013,7 +1013,7 @@ onShow(() => {
 
 .swipe-content {
   position: relative;
-  background: #fff;
+  background: var(--card-bg);
   transition: transform 0.3s ease;
   will-change: transform;
   z-index: 2;
@@ -1034,12 +1034,12 @@ onShow(() => {
 .log-name {
   font-size: 28rpx;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .log-meta {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 
@@ -1064,7 +1064,7 @@ onShow(() => {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
-  background: #f0f0f2;
+  background: var(--input-bg);
   color: #ff3b30;
   display: flex;
   align-items: center;
@@ -1090,7 +1090,7 @@ onShow(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 40rpx 40rpx 0 0;
   padding: 40rpx;
   z-index: 201;
@@ -1113,16 +1113,16 @@ onShow(() => {
 .sheet-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sheet-close {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: #f5f5f7;
+  background: var(--input-bg);
   font-size: 28rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1138,7 +1138,7 @@ onShow(() => {
   align-items: center;
   gap: 24rpx;
   padding: 20rpx 0;
-  border-bottom: 2rpx solid #f0f0f2;
+  border-bottom: 2rpx solid var(--border-color);
 }
 
 .select-arrow {
@@ -1148,7 +1148,7 @@ onShow(() => {
 
 .custom-section {
   margin-top: 32rpx;
-  border-top: 2rpx solid #f0f0f2;
+  border-top: 2rpx solid var(--border-color);
   padding-top: 24rpx;
 }
 
@@ -1176,11 +1176,11 @@ onShow(() => {
 .custom-input {
   width: 100%;
   height: 80rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 20rpx;
   padding: 0 24rpx;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   margin-bottom: 16rpx;
 }
 
@@ -1201,11 +1201,11 @@ onShow(() => {
 .picker-display {
   width: 100%;
   height: 80rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 20rpx;
   padding: 0 24rpx;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   line-height: 80rpx;
 }
 
@@ -1216,7 +1216,7 @@ onShow(() => {
 .selected-food-card {
   display: flex;
   gap: 24rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 28rpx;
   padding: 28rpx;
   margin-bottom: 32rpx;
@@ -1237,7 +1237,7 @@ onShow(() => {
 .sf-name {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .sf-cal {
@@ -1248,7 +1248,7 @@ onShow(() => {
 
 .sf-nutri {
   font-size: 24rpx;
-  color: #86868b;
+  color: var(--text-secondary);
   margin-top: 8rpx;
 }
 
@@ -1258,7 +1258,7 @@ onShow(() => {
 
 .amount-label {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   font-weight: 500;
   display: block;
   margin-bottom: 16rpx;
@@ -1274,7 +1274,7 @@ onShow(() => {
   width: 80rpx;
   height: 88rpx;
   border-radius: 24rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   font-size: 44rpx;
   color: #007aff;
   display: flex;
@@ -1285,17 +1285,17 @@ onShow(() => {
 .amount-input {
   flex: 1;
   height: 88rpx;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border-radius: 24rpx;
   text-align: center;
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
 .amount-unit {
   font-size: 32rpx;
-  color: #86868b;
+  color: var(--text-secondary);
 }
 
 .calorie-preview {
@@ -1322,8 +1322,8 @@ onShow(() => {
   padding: 16rpx 8rpx;
   border-radius: 24rpx;
   font-size: 26rpx;
-  color: #86868b;
-  background: #f5f5f7;
+  color: var(--text-secondary);
+  background: var(--input-bg);
   text-align: center;
 }
 
@@ -1354,155 +1354,7 @@ onShow(() => {
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-size: 28rpx;
-}
-
-/* Dark Mode */
-.dark-mode {
-  background: #1a1a1a;
-}
-.dark-mode .page-header {
-  background: #1a1a1a;
-}
-.dark-mode .page-title {
-  color: #f5f5f7;
-}
-.dark-mode .icon-btn {
-  background: #2c2c2e;
-}
-.dark-mode .date-nav {
-  background: #2c2c2e;
-}
-.dark-mode .date-main {
-  color: #f5f5f7;
-}
-.dark-mode .card {
-  background: #2c2c2e;
-}
-.dark-mode .ss-label {
-  color: #98989d;
-}
-.dark-mode .meal-summary-card {
-  background: #2c2c2e;
-}
-.dark-mode .ms-name {
-  color: #98989d;
-}
-.dark-mode .ms-cal {
-  color: #f5f5f7;
-}
-.dark-mode .search-input {
-  background: #2c2c2e;
-  color: #f5f5f7;
-}
-.dark-mode .cat-pill {
-  background: #2c2c2e;
-  color: #98989d;
-}
-.dark-mode .section-title {
-  color: #f5f5f7;
-}
-.dark-mode .quick-foods {
-  background: #2c2c2e;
-}
-.dark-mode .quick-food-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .qf-name {
-  color: #f5f5f7;
-}
-.dark-mode .qf-cal {
-  color: #98989d;
-}
-.dark-mode .meal-group {
-  background: #2c2c2e;
-}
-.dark-mode .meal-header {
-  border-bottom-color: #38383a;
-}
-.dark-mode .meal-name {
-  color: #f5f5f7;
-}
-.dark-mode .meal-add-btn {
-  background: #38383a;
-}
-.dark-mode .empty-meal {
-  color: #636366;
-}
-.dark-mode .log-item {
-  background: #2c2c2e;
-}
-.dark-mode .swipe-content {
-  background: #2c2c2e;
-}
-.dark-mode .log-name {
-  color: #f5f5f7;
-}
-.dark-mode .log-meta {
-  color: #98989d;
-}
-.dark-mode .log-delete-btn {
-  background: #38383a;
-}
-.dark-mode .bottom-sheet {
-  background: #2c2c2e;
-}
-.dark-mode .sheet-title {
-  color: #f5f5f7;
-}
-.dark-mode .sheet-close {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .sheet-result-item {
-  border-bottom-color: #38383a;
-}
-.dark-mode .custom-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .picker-display {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .custom-title-text {
-  color: #0a84ff;
-}
-.dark-mode .toggle-icon {
-  color: #0a84ff;
-}
-.dark-mode .selected-food-card {
-  background: #38383a;
-}
-.dark-mode .sf-name {
-  color: #f5f5f7;
-}
-.dark-mode .sf-cal {
-  color: #0a84ff;
-}
-.dark-mode .sf-nutri {
-  color: #98989d;
-}
-.dark-mode .amount-btn {
-  background: #38383a;
-  color: #0a84ff;
-}
-.dark-mode .amount-input {
-  background: #38383a;
-  color: #f5f5f7;
-}
-.dark-mode .amount-label {
-  color: #f5f5f7;
-}
-.dark-mode .meal-pill {
-  background: #38383a;
-  color: #98989d;
-}
-.dark-mode .custom-section {
-  border-top-color: #38383a;
-}
-.dark-mode .ph-class {
-  color: #636366;
 }
 </style>
