@@ -52,7 +52,7 @@ function switchTo(i) {
   background: #ffffff;
   border-top: 1rpx solid #e5e5ea;
   padding: 10rpx 0 calc(10rpx + env(safe-area-inset-bottom));
-  z-index: 999;
+  z-index: 100;
 }
 
 .ctab-dark {
