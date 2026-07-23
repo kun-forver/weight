@@ -29,10 +29,14 @@ async def search_foods(
     db: Session = Depends(get_db),
 ):
     """Search for foods. Searches local DB first, then OpenFoodFacts API."""
+    query_str = q.strip() if q else ""
+    if not query_str:
+        return []
+
     # 1. Search local DB
     local_foods = (
         db.query(Food)
-        .filter(Food.name.like(f"%{q}%"))
+        .filter(Food.name.like(f"%{query_str}%"))
         .limit(20)
         .all()
     )
@@ -53,22 +57,25 @@ async def search_foods(
 
     # 2. If fewer than 10 local results, supplement with OpenFoodFacts
     if len(results) < 10:
-        off_results = await off_service.search(q)
-        existing_names = {r.name for r in results}
-        for item in off_results:
-            if item["name"] and item["name"] not in existing_names:
-                results.append(
-                    FoodResponse(
-                        name=item["name"],
-                        calories=item["calories"],
-                        protein=item["protein"],
-                        carbs=item["carbs"],
-                        fat=item["fat"],
-                        source="openfoodfacts",
+        try:
+            off_results = await off_service.search(query_str)
+            existing_names = {r.name for r in results}
+            for item in off_results:
+                if item.get("name") and item["name"] not in existing_names:
+                    results.append(
+                        FoodResponse(
+                            name=item["name"],
+                            calories=item.get("calories", 0.0),
+                            protein=item.get("protein", 0.0),
+                            carbs=item.get("carbs", 0.0),
+                            fat=item.get("fat", 0.0),
+                            source="openfoodfacts",
+                        )
                     )
-                )
-            if len(results) >= 20:
-                break
+                if len(results) >= 20:
+                    break
+        except Exception:
+            pass
     return results
 
 

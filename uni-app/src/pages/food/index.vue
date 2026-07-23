@@ -456,18 +456,19 @@ async function fetchDayData() {
 }
 
 async function doSearch() {
-  if (!searchQuery.value.trim() || searching.value) return
+  const query = searchQuery.value.trim()
+  if (!query || searching.value) return
   searching.value = true
   searchResults.value = []
   try {
-    const res = await api.get(`/foods/search?q=${encodeURIComponent(searchQuery.value)}`)
+    const res = await api.get(`/foods/search?q=${encodeURIComponent(query)}`)
     searchResults.value = res.data || []
     if (searchResults.value.length === 0) {
       uni.showToast({ title: '未找到相关食物', icon: 'none' })
     }
   } catch (e) {
     const detail = e?.data?.detail || e?.response?.data?.detail
-    uni.showToast({ title: '搜索失败: ' + (typeof detail === 'string' ? detail : ''), icon: 'none' })
+    uni.showToast({ title: '搜索失败: ' + (typeof detail === 'string' ? detail : '请重试'), icon: 'none' })
     searchResults.value = []
   } finally {
     searching.value = false
@@ -500,11 +501,12 @@ function closeAddSheet() {
 }
 
 async function sheetSearch() {
-  if (!sheetSearchQuery.value.trim() || sheetSearching.value) return
+  const query = sheetSearchQuery.value.trim()
+  if (!query || sheetSearching.value) return
   sheetSearching.value = true
   sheetResults.value = []
   try {
-    const res = await api.get(`/foods/search?q=${encodeURIComponent(sheetSearchQuery.value)}`)
+    const res = await api.get(`/foods/search?q=${encodeURIComponent(query)}`)
     sheetResults.value = res.data || []
     sheetSearched.value = true
     if (sheetResults.value.length === 0) {
@@ -559,7 +561,12 @@ async function saveFoodLog() {
   saving.value = true
   try {
     await api.post('/food-logs', {
-      food_id: selectedFood.value.id,
+      food_id: selectedFood.value.id || null,
+      food_name: selectedFood.value.name,
+      calories: selectedFood.value.calories,
+      protein: selectedFood.value.protein,
+      carbs: selectedFood.value.carbs,
+      fat: selectedFood.value.fat,
       meal_type: selectedMealType.value,
       amount: foodAmount.value,
     })
